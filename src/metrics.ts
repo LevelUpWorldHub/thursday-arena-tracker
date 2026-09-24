@@ -27,6 +27,7 @@ export type Snap = {
   season: number;
   final?: boolean;
   verified?: boolean;
+  complete?: boolean;
   entries: Row[];
 };
 
@@ -63,6 +64,18 @@ export function byTime(snaps: Snap[]): Snap[] {
 
 export function officialPrevious(current: number): number | null {
   return current > 1 ? current - 1 : null;
+}
+
+export function forMovement(snap: Snap): boolean {
+  return snap.verified !== false && snap.final !== true;
+}
+
+export function movementSnaps(snaps: Snap[]): Snap[] {
+  return snaps.filter(forMovement);
+}
+
+export function strictTop20(entries: Row[]): Row[] {
+  return entries.filter((row) => row.rank >= 1 && row.rank <= TOP_CUT).sort((a, b) => a.rank - b.rank);
 }
 
 export function inTop20(entries: Row[], count = entries.length): Row[] {
@@ -151,13 +164,14 @@ export function fallers(rows: Delta[], limit = 5): Delta[] {
 }
 
 export function coveringPair(snaps: Snap[], hours: number): Result<{ from: Snap; to: Snap }> {
-  if (snaps.length < 2) return { ok: false, reason: "missing" };
-  const season = snaps[0].season;
-  if (snaps.some((snap) => snap.season !== season)) return { ok: false, reason: "different-seasons" };
-  const end = snaps[snaps.length - 1];
+  const usable = movementSnaps(snaps);
+  if (usable.length < 2) return { ok: false, reason: "missing" };
+  const season = usable[0].season;
+  if (usable.some((snap) => snap.season !== season)) return { ok: false, reason: "different-seasons" };
+  const end = usable[usable.length - 1];
   const target = Date.parse(end.captured_at) - hours * 36e5;
   let anchor: Snap | null = null;
-  for (const snap of snaps) {
+  for (const snap of usable) {
     if (snap === end) break;
     if (Date.parse(snap.captured_at) <= target) anchor = snap;
   }
@@ -209,10 +223,11 @@ export type DayPlan =
   | { kind: "not-computed"; message: string };
 
 export function dayMoverPlan(snaps: Snap[], startsAt: string | null, nowMs: number): DayPlan {
-  if (snaps.some((snap, index) => index > 0 && snap.season !== snaps[0].season)) {
+  const usable = movementSnaps(snaps);
+  if (usable.some((snap, index) => index > 0 && snap.season !== usable[0].season)) {
     return { kind: "not-computed", message: "Refusing to mix seasons." };
   }
-  const pair = coveringPair(snaps, 24);
+  const pair = coveringPair(usable, 24);
   if (pair.ok) {
     const deltas = ratingDeltas(pair.value.from, pair.value.to);
     if (!deltas.ok) return { kind: "not-computed", message: "Refusing to mix seasons." };
@@ -221,9 +236,9 @@ export function dayMoverPlan(snaps: Snap[], startsAt: string | null, nowMs: numb
   if (pair.reason === "different-seasons") {
     return { kind: "not-computed", message: "Refusing to mix seasons." };
   }
-  const age = seasonAgeHours(startsAt, nowMs, snaps[0]?.captured_at ?? null);
-  if (justReset(age) && snaps.length) {
-    const latest = snaps[snaps.length - 1];
+  const age = seasonAgeHours(startsAt, nowMs, usable[0]?.captured_at ?? null);
+  if (justReset(age) && usable.length) {
+    const latest = usable[usable.length - 1];
     return {
       kind: "since-start",
       label: sinceStartLabel(age ?? 0),
@@ -251,6 +266,7 @@ export type PreviousSeasonRow = {
 export function versusPreviousSeason(rows: Row[], currentSeason: number): PreviousSeasonRow[] {
   const out: PreviousSeasonRow[] = [];
   for (const row of rows) {
+    if (games(row) < 1) continue;
     const prior = row.last_season;
     if (!prior || prior.season === currentSeason || prior.rating == null) continue;
     out.push({
@@ -281,14 +297,15 @@ export type WeekPlan =
 
 const WEEK_NOTE = "7-day view spans seasons; showing season-to-date";
 
-export function weekMoverPlan(snaps: Snap[], currentSeason: number): WeekPlan {
-  if (!snaps.length) {
+export function weekMoverPlan(snaps: Snap[], currentSeason: number, startsAt: string | null = null, nowMs?: number): WeekPlan {
+  const usable = movementSnaps(snaps);
+  if (!usable.length) {
     return { kind: "not-computed", message: "No stored snapshots for this season." };
   }
-  if (snaps.some((snap) => snap.season !== currentSeason)) {
+  if (usable.some((snap) => snap.season !== currentSeason)) {
     return { kind: "not-computed", message: "Refusing to mix seasons." };
   }
-  const pair = coveringPair(snaps, 24 * 7);
+  const pair = coveringPair(usable, 24 * 7);
   if (pair.ok) {
     const deltas = ratingDeltas(pair.value.from, pair.value.to);
     if (!deltas.ok) return { kind: "not-computed", message: "Refusing to mix seasons." };
@@ -297,20 +314,21 @@ export function weekMoverPlan(snaps: Snap[], currentSeason: number): WeekPlan {
   if (pair.reason === "different-seasons") {
     return { kind: "not-computed", message: "Refusing to mix seasons." };
   }
-  const from = snaps[0];
-  const to = snaps[snaps.length - 1];
+  const from = usable[0];
+  const to = usable[usable.length - 1];
   let deltas: Delta[] | null = null;
   if (from !== to) {
     const compared = ratingDeltas(from, to);
     deltas = compared.ok ? compared.value : null;
   }
+  const age = nowMs == null ? null : seasonAgeHours(startsAt, nowMs, from.captured_at);
   return {
     kind: "season-to-date",
     note: WEEK_NOTE,
     from,
     to,
     deltas,
-    versusPrevious: versusPreviousSeason(to.entries, currentSeason),
+    versusPrevious: justReset(age) ? [] : versusPreviousSeason(to.entries, currentSeason),
   };
 }
 
@@ -346,14 +364,15 @@ export function rosterChanges(from: Snap | null, to: Snap | null, firstSnapshot:
 export type Appearance = { handle: string; appearances: number };
 
 export function appearances(snaps: Snap[]): { snapshots: number; rows: Appearance[] } {
+  const usable = movementSnaps(snaps);
   const counts = new Map<string, number>();
-  for (const snap of snaps) {
-    for (const row of inTop20(snap.entries, snap.count)) {
+  for (const snap of usable) {
+    for (const row of strictTop20(snap.entries)) {
       counts.set(row.x_handle, (counts.get(row.x_handle) || 0) + 1);
     }
   }
   return {
-    snapshots: snaps.length,
+    snapshots: usable.length,
     rows: [...counts.entries()]
       .map(([handle, count]) => ({ handle, appearances: count }))
       .sort((a, b) => b.appearances - a.appearances || a.handle.localeCompare(b.handle)),
@@ -374,13 +393,16 @@ export type SeasonAppearances = {
 };
 
 export function appearancesAcross(groups: { season: number; snaps: Snap[] }[]): SeasonAppearances {
-  const seasons = groups.map((group) => ({ number: group.season, snapshots: group.snaps.length }));
+  const prepared = groups
+    .map((group) => ({ season: group.season, table: appearances(group.snaps) }))
+    .filter((item) => item.table.snapshots > 0);
+  const seasons = prepared.map((item) => ({ number: item.season, snapshots: item.table.snapshots }));
   const byHandle = new Map<string, Map<number, number>>();
-  for (const group of groups) {
-    const table = appearances(group.snaps);
+  for (const item of prepared) {
+    const table = item.table;
     for (const row of table.rows) {
       if (!byHandle.has(row.handle)) byHandle.set(row.handle, new Map());
-      byHandle.get(row.handle)?.set(group.season, row.appearances);
+      byHandle.get(row.handle)?.set(item.season, row.appearances);
     }
   }
   const rows = [...byHandle.entries()]
@@ -405,7 +427,17 @@ export function frequencySeason(currentSnaps: number, previousSnaps: number): "c
   return "current";
 }
 
-export type Point = { t: string; rating: number; rank: number; season: number };
+export type Point = { t: string; rating: number; rank: number; season: number; mark?: "unverified" | "final" };
+
+export function seasonEnded(endsAt: string | null, nowMs: number): boolean {
+  if (!endsAt) return false;
+  const end = Date.parse(endsAt);
+  return !Number.isNaN(end) && nowMs > end;
+}
+
+export function endedWaitingText(number: number, endsAtLabel: string): string {
+  return `${seasonLabel(number)} ended ${endsAtLabel}; waiting for next snapshot`;
+}
 
 /** Final standings are the season's close, not the later hour we downloaded them. */
 export function chartInstant(snap: Snap, endsAt: string | null, nextStartsAt: string | null): string {
@@ -418,7 +450,8 @@ export function seriesFor(snaps: Snap[], handle: string): Point[] {
   for (const snap of snaps) {
     const row = snap.entries.find((entry) => entry.x_handle === handle);
     if (!row) continue;
-    points.push({ t: snap.captured_at, rating: row.rating, rank: row.rank, season: snap.season });
+    const mark = snap.final === true ? "final" : snap.verified === false ? "unverified" : undefined;
+    points.push({ t: snap.captured_at, rating: row.rating, rank: row.rank, season: snap.season, ...(mark ? { mark } : {}) });
   }
   return points;
 }

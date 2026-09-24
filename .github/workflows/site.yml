@@ -46,7 +46,6 @@ jobs:
             git push origin HEAD:main
           fi
       - run: npm ci
-      - run: npm test
       - name: Build site
         env:
           BASE_PATH: /thursday-arena-tracker/

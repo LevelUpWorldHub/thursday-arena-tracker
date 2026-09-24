@@ -87,6 +87,39 @@ export function validateCatalog(body) {
   return { ok: true, bots: body };
 }
 
+export function seasonStart(index, number) {
+  if (index?.current?.number === number && index.current.starts_at) return index.current.starts_at;
+  if (index?.next?.number === number && index.next.starts_at) return index.next.starts_at;
+  const listed = (index?.seasons || []).find((season) => season.number === number);
+  return listed?.starts_at || null;
+}
+
+export function applyEndedSeason(index, storedCurrent, incoming) {
+  if (!Number.isFinite(storedCurrent) || !(incoming > storedCurrent)) return;
+  const seasons = Array.isArray(index.seasons) ? index.seasons : [];
+  const prior = seasons.find((season) => season.number === storedCurrent) || { number: storedCurrent };
+  const successorStart = seasonStart(index, incoming);
+  const next = { ...prior, number: storedCurrent, state: "ended" };
+  if (!prior.ends_at && successorStart) next.ends_at = successorStart;
+  else next.ends_at = prior.ends_at || null;
+  index.seasons = [...seasons.filter((season) => season.number !== storedCurrent), next].sort((a, b) => a.number - b.number);
+}
+
+export function backfillEnds(index, incoming) {
+  for (const season of index.seasons || []) {
+    if (season.ends_at || season.number >= incoming) continue;
+    const starts = seasonStart(index, season.number + 1);
+    if (starts) season.ends_at = starts;
+  }
+}
+
+export function indexSignature(index) {
+  const copy = structuredClone(index ?? {});
+  delete copy.last_checked;
+  delete copy.generated_at;
+  return JSON.stringify(copy);
+}
+
 export function shouldWriteHourly(incomingNumber, storedCurrent) {
   if (!Number.isFinite(incomingNumber)) return false;
   if (!Number.isFinite(storedCurrent)) return true;
@@ -177,6 +210,7 @@ export function normalizeSnap(raw) {
     source_note: typeof raw.source_note === "string" ? raw.source_note : null,
     verified: raw.verified === false ? false : true,
     final: raw.final === true,
+    ...(raw.complete === false ? { complete: false } : {}),
     season: {
       number: raw.season.number,
       state: typeof raw.season.state === "string" ? raw.season.state : "unknown",

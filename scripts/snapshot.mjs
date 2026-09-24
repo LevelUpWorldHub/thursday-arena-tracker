@@ -4,7 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
+  applyEndedSeason,
+  backfillEnds,
   fingerprint,
+  indexSignature,
   normalizeSnap,
   shouldWriteHourly,
   utcDay,
@@ -18,7 +21,7 @@ const seasonsRoot = path.join(root, "data/seasons");
 const API = "https://thursdayarena.com/api/public/v1";
 const CATALOG_URL = "https://thursdayarena.com/api/catalog";
 const USER_AGENT = "thursday-arena-tracker/1.0 (+https://github.com/LevelUpWorldHub/thursday-arena-tracker)";
-const FINAL_PAGE_CAP = 10;
+const FINAL_PAGE_CAP = 20;
 
 function setOutput(status) {
   if (!process.env.GITHUB_OUTPUT) return;
@@ -62,8 +65,8 @@ async function exists(file) {
   }
 }
 
-async function loadSeasonSnapshots(number) {
-  const dir = path.join(seasonsRoot, String(number), "snapshots");
+async function loadSeasonSnapshots(number, seasonsDir = seasonsRoot) {
+  const dir = path.join(seasonsDir, String(number), "snapshots");
   let names = [];
   try {
     names = (await readdir(dir)).filter((name) => name.endsWith(".json")).sort();
@@ -82,11 +85,11 @@ async function loadSeasonSnapshots(number) {
   return snaps;
 }
 
-async function storedCurrentNumber(index) {
+async function storedCurrentNumber(index, seasonsDir = seasonsRoot) {
   if (index?.current && Number.isFinite(index.current.number)) return index.current.number;
   let names = [];
   try {
-    names = await readdir(seasonsRoot);
+    names = await readdir(seasonsDir);
   } catch {
     return null;
   }
@@ -95,9 +98,9 @@ async function storedCurrentNumber(index) {
   return Math.max(...numbers);
 }
 
-async function writeHourly(snap) {
+async function writeHourly(snap, seasonsDir = seasonsRoot) {
   const day = utcDay(snap.captured_at);
-  const dir = path.join(seasonsRoot, String(snap.season.number), "snapshots");
+  const dir = path.join(seasonsDir, String(snap.season.number), "snapshots");
   await mkdir(dir, { recursive: true });
   const file = path.join(dir, `${day}.json`);
   const doc = (await exists(file))
@@ -118,7 +121,7 @@ async function writeHourly(snap) {
   console.log(`wrote hourly s${snap.season.number} ${day} (${doc.snapshots.length} that day)`);
 }
 
-async function fetchPages(seasonNumber, maxPages, exhaustive) {
+async function fetchPages(seasonNumber, maxPages, exhaustive, fetchImpl = fetchJson) {
   const entries = [];
   let season = null;
   let cursor = null;
@@ -128,7 +131,7 @@ async function fetchPages(seasonNumber, maxPages, exhaustive) {
     url.searchParams.set("limit", "100");
     if (seasonNumber != null) url.searchParams.set("season", String(seasonNumber));
     if (cursor) url.searchParams.set("cursor", cursor);
-    const fetched = await fetchJson(url);
+    const fetched = await fetchImpl(url);
     if (!fetched.ok) return { ok: false, error: fetched.error };
     const valid = validateLeaderboard(fetched.body);
     if (!valid.ok) return { ok: false, error: valid.error };
@@ -151,28 +154,32 @@ async function fetchPages(seasonNumber, maxPages, exhaustive) {
   return { ok: false, error: `stopped after ${maxPages} pages with more cursor pages left` };
 }
 
-async function maybeWriteFinal(previousNumber) {
-  const file = path.join(seasonsRoot, String(previousNumber), "final.json");
+export async function maybeWriteFinal(previousNumber, options = {}) {
+  const seasonsDir = options.seasonsRoot || seasonsRoot;
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
+  const file = path.join(seasonsDir, String(previousNumber), "final.json");
   if (await exists(file)) {
-    console.log(`final for season ${previousNumber} already stored`);
-    return "exists";
+    const existing = await readJson(file);
+    if (existing.complete !== false) {
+      console.log(`final for season ${previousNumber} already stored`);
+      return "exists";
+    }
+    console.log(`retrying incomplete final for season ${previousNumber}`);
   }
-  const fetched = await fetchPages(previousNumber, FINAL_PAGE_CAP, true);
+  const fetched = await fetchPages(previousNumber, FINAL_PAGE_CAP, false, fetchImpl);
   if (!fetched.ok) {
     console.error(`final skipped: ${fetched.error}`);
     return "skipped";
   }
-  if (!fetched.complete) {
-    console.error("final skipped: incomplete paging");
-    return "skipped";
-  }
   await mkdir(path.dirname(file), { recursive: true });
-  const capturedAt = new Date().toISOString();
+  const capturedAt = clock().toISOString();
   await writeFile(
     file,
     `${JSON.stringify(
       {
         final: true,
+        complete: fetched.complete === true,
         captured_at: capturedAt,
         source: `${API}/leaderboard?season=${previousNumber}&limit=100`,
         verified: true,
@@ -185,19 +192,23 @@ async function maybeWriteFinal(previousNumber) {
       2,
     )}\n`,
   );
-  console.log(`wrote final season ${previousNumber} (${fetched.entries.length} rows, ${fetched.pages} pages)`);
+  console.log(
+    `wrote final season ${previousNumber} (${fetched.entries.length} rows, ${fetched.pages} pages, complete=${fetched.complete === true})`,
+  );
   return "wrote";
 }
 
-async function maybeWriteCatalog() {
-  const day = utcDay(new Date().toISOString());
-  const dir = path.join(root, "data/catalog");
+async function maybeWriteCatalog(options = {}) {
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
+  const day = utcDay(clock().toISOString());
+  const dir = options.catalogRoot || path.join(root, "data/catalog");
   const file = path.join(dir, `${day}.json`);
   if (await exists(file)) {
     console.log(`catalog ${day} already stored`);
     return "exists";
   }
-  const fetched = await fetchJson(CATALOG_URL);
+  const fetched = await fetchImpl(CATALOG_URL);
   if (!fetched.ok) {
     console.error(`catalog skipped: ${fetched.error}`);
     return "skipped";
@@ -212,7 +223,7 @@ async function maybeWriteCatalog() {
     file,
     `${JSON.stringify(
       {
-        captured_at: new Date().toISOString(),
+        captured_at: clock().toISOString(),
         source: CATALOG_URL,
         count: valid.bots.length,
         bots: valid.bots,
@@ -234,24 +245,36 @@ function upsertSeason(index, number, patch) {
   index.seasons = rest.sort((a, b) => a.number - b.number);
 }
 
-async function main() {
-  await runImport();
-  const indexPath = path.join(seasonsRoot, "index.json");
-  const index = (await exists(indexPath)) ? await readJson(indexPath) : { seasons: [] };
-  const checkedAt = new Date().toISOString();
+async function writeLastCheck(checkedAt, cacheFile = path.join(root, ".cache", "last-check.json")) {
+  await mkdir(path.dirname(cacheFile), { recursive: true });
+  await writeFile(cacheFile, `${JSON.stringify({ checked_at: checkedAt }, null, 2)}\n`);
+}
 
-  const seasonFetched = await fetchJson(`${API}/season`);
+export async function runSnapshot(options = {}) {
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
+  const dataRoot = options.root || root;
+  const seasonsDir = options.seasonsRoot || path.join(dataRoot, "data/seasons");
+  const catalogDir = options.catalogRoot || path.join(dataRoot, "data/catalog");
+  const cacheFile = options.cacheFile || path.join(dataRoot, ".cache", "last-check.json");
+  if (path.resolve(seasonsDir) === path.resolve(seasonsRoot)) await runImport();
+  const indexPath = path.join(seasonsDir, "index.json");
+  const index = (await exists(indexPath)) ? await readJson(indexPath) : { seasons: [] };
+  const signatureBefore = indexSignature(index);
+  const checkedAt = clock().toISOString();
+
+  const seasonFetched = await fetchImpl(`${API}/season`);
   const seasonIndex = seasonFetched.ok ? validateSeasonIndex(seasonFetched.body) : { ok: false, error: seasonFetched.error };
   if (!seasonIndex.ok) console.error(`season index skipped: ${seasonIndex.error}`);
 
-  const board = await fetchPages(null, 1, false);
+  const board = await fetchPages(null, 1, false, fetchImpl);
   if (!board.ok) {
     console.error(`ladder skipped: ${board.error}`);
     setOutput("skipped");
     return;
   }
   const incoming = board.season.number;
-  const storedCurrent = await storedCurrentNumber(index);
+  const storedCurrent = await storedCurrentNumber(index, seasonsDir);
   if (!shouldWriteHourly(incoming, storedCurrent)) {
     console.error(`refusing hourly write: season ${incoming} is below stored current ${storedCurrent}`);
     setOutput("skipped");
@@ -260,7 +283,7 @@ async function main() {
 
   let wroteFinal = false;
   const closeFinal = async (number) => {
-    const finalStatus = await maybeWriteFinal(number);
+    const finalStatus = await maybeWriteFinal(number, { seasonsRoot: seasonsDir, fetchJson: fetchImpl, now: clock });
     if (finalStatus === "wrote") wroteFinal = true;
     if (finalStatus === "wrote" || finalStatus === "exists") {
       upsertSeason(index, number, { state: "ended" });
@@ -276,26 +299,29 @@ async function main() {
     if (season.number < incoming) season.state = "ended";
   }
 
-  const existing = await loadSeasonSnapshots(incoming);
+  const existing = await loadSeasonSnapshots(incoming, seasonsDir);
   const latest = existing[existing.length - 1];
   const nextFp = fingerprint(incoming, board.entries);
   const same = latest && fingerprint(latest.season.number, latest.entries) === nextFp;
   let wroteLadder = false;
-  const capturedAt = new Date().toISOString();
+  const capturedAt = clock().toISOString();
   if (same) {
     console.log(`season ${incoming} board unchanged; not writing a duplicate snapshot`);
   } else {
-    await writeHourly({
-      captured_at: capturedAt,
-      source: `${API}/leaderboard?limit=100`,
-      season: { number: board.season.number, state: board.season.state },
-      count: board.entries.length,
-      entries: board.entries,
-    });
+    await writeHourly(
+      {
+        captured_at: capturedAt,
+        source: `${API}/leaderboard?limit=100`,
+        season: { number: board.season.number, state: board.season.state },
+        count: board.entries.length,
+        entries: board.entries,
+      },
+      seasonsDir,
+    );
     wroteLadder = true;
   }
 
-  const after = await loadSeasonSnapshots(incoming);
+  const after = await loadSeasonSnapshots(incoming, seasonsDir);
   const first = after[0]?.captured_at || null;
   const last = after[after.length - 1]?.captured_at || null;
   if (seasonIndex.ok) {
@@ -316,34 +342,30 @@ async function main() {
     first_snapshot: first,
     last_snapshot: last,
   });
-  if (Number.isFinite(storedCurrent) && incoming > storedCurrent && seasonIndex.ok && index.current) {
-    upsertSeason(index, storedCurrent, {
-      state: "ended",
-      ends_at: index.current.starts_at || checkedAt,
-    });
-  }
-  for (const season of index.seasons || []) {
-    if (season.ends_at || season.number >= incoming) continue;
-    const successor = (index.seasons || []).find((item) => item.number === season.number + 1);
-    const starts =
-      successor?.starts_at ||
-      (index.current?.number === season.number + 1 ? index.current.starts_at : null) ||
-      (index.next?.number === season.number + 1 ? index.next.starts_at : null);
-    if (starts) season.ends_at = starts;
-  }
+  applyEndedSeason(index, storedCurrent, incoming);
+  backfillEnds(index, incoming);
+  const materialIndex = indexSignature(index) !== signatureBefore;
   index.last_checked = checkedAt;
   index.generated_at = checkedAt;
-  await mkdir(seasonsRoot, { recursive: true });
-  await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+  const catalogStatus = await maybeWriteCatalog({ fetchJson: fetchImpl, now: clock, catalogRoot: catalogDir });
+  if (materialIndex || wroteLadder || wroteFinal || catalogStatus === "wrote") {
+    await mkdir(seasonsDir, { recursive: true });
+    await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+  } else {
+    console.log("index timestamps only; leaving index.json unchanged");
+  }
+  await writeLastCheck(checkedAt, cacheFile);
 
-  const catalogStatus = await maybeWriteCatalog();
-  const status = wroteLadder || wroteFinal || catalogStatus === "wrote" || !same ? "wrote" : "deduped";
-  // last_checked always changes the index, so the commit step should see a diff.
-  setOutput(wroteLadder || wroteFinal || catalogStatus === "wrote" ? "wrote" : "deduped");
+  const status = wroteLadder || wroteFinal || catalogStatus === "wrote" || materialIndex ? "wrote" : "deduped";
+  setOutput(status);
   console.log(`status=${status}`);
+  return status;
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) {
+  runSnapshot().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}
