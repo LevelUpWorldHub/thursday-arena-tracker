@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thursday Arena ladder</title>
+    <meta
+      name="description"
+      content="Unofficial Thursday Arena ladder tracker. Current season, rating history, and catalog counts from the public API."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#ladder">Skip to ladder</a>
+    <header class="wrap head">
+      <p class="kicker"><a href="https://thursdayarena.com">Thursday Arena</a> · unofficial ladder</p>
+      <h1>Ladder</h1>
+      <p id="season-line">Loading the current season…</p>
+      <p id="freshness"></p>
+      <p id="reset-banner" class="banner" hidden></p>
+    </header>
+    <main class="wrap">
+      <section id="ladder" aria-labelledby="ladder-title"></section>
+      <section id="previous" aria-labelledby="previous-title"></section>
+      <section id="movers" aria-labelledby="movers-title"></section>
+      <section id="roster" aria-labelledby="roster-title"></section>
+      <section id="frequency" aria-labelledby="frequency-title"></section>
+      <section id="history" aria-labelledby="history-title"></section>
+      <section id="catalog" aria-labelledby="catalog-title"></section>
+      <section id="lineups" class="panel soon-panel" aria-labelledby="lineups-title">
+        <h2 id="lineups-title">Winning lineups / bot usage</h2>
+        <p class="soon">Coming soon</p>
+        <p>No lineup or bot-usage numbers are shown here.</p>
+      </section>
+    </main>
+    <footer class="wrap">
+      <p>Built by LevelUp</p>
+      <p>Unofficial fan tracker; data from Thursday Arena public API.</p>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
