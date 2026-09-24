@@ -13,12 +13,16 @@ import {
   frequencySeason,
   inTop20,
   isStale,
+  endedWaitingText,
   justReset,
+  movementSnaps,
   ratingDeltas,
   rosterChanges,
+  seasonEnded,
   seasonLabel,
   seriesFor,
   sinceStartLabel,
+  versusPreviousSeason,
   weekMoverPlan,
   withTiedCutoff,
   type Row,
@@ -149,6 +153,82 @@ describe("movers stay inside one season", () => {
       assert.equal(plan.versusPrevious[0].ratingDelta, 1120 - 1400);
     }
   });
+
+  it("a Season 5 snapshot with everyone at 1000 yields no rows", () => {
+    const rows = [1, 2, 3].map((rank) =>
+      row({
+        x_handle: `p${rank}`,
+        rank,
+        rating: 1000,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        last_season: { season: 4, rating: 1600, rank },
+      }),
+    );
+    assert.equal(versusPreviousSeason(rows, 5).length, 0);
+    const plan = weekMoverPlan(
+      [snap(5, "2026-09-26T08:00:00Z", rows)],
+      5,
+      "2026-09-26T07:00:00Z",
+      Date.parse("2026-09-26T08:00:00Z"),
+    );
+    assert.equal(plan.kind, "season-to-date");
+    if (plan.kind === "season-to-date") assert.equal(plan.versusPrevious.length, 0);
+  });
+
+  it("hides the previous-season finish list during the first 24 hours", () => {
+    const played = row({
+      x_handle: "played",
+      rank: 1,
+      rating: 1010,
+      wins: 1,
+      last_season: { season: 4, rating: 1600, rank: 1 },
+    });
+    const idle = row({
+      x_handle: "idle",
+      rank: 2,
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      last_season: { season: 4, rating: 1500, rank: 2 },
+    });
+    const early = weekMoverPlan(
+      [snap(5, "2026-09-26T08:00:00Z", [played, idle])],
+      5,
+      "2026-09-26T07:00:00Z",
+      Date.parse("2026-09-26T10:00:00Z"),
+    );
+    assert.equal(early.kind, "season-to-date");
+    if (early.kind === "season-to-date") assert.equal(early.versusPrevious.length, 0);
+    const later = weekMoverPlan(
+      [snap(5, "2026-09-26T08:00:00Z", [played, idle]), snap(5, "2026-09-27T12:00:00Z", [played, idle])],
+      5,
+      "2026-09-26T07:00:00Z",
+      Date.parse("2026-09-27T12:00:00Z"),
+    );
+    assert.equal(later.kind, "season-to-date");
+    if (later.kind === "season-to-date") {
+      assert.deepEqual(later.versusPrevious.map((item) => item.handle), ["played"]);
+    }
+  });
+
+  it("does not anchor movers on an unverified snapshot or a final", () => {
+    const finalSnap = snap(4, "2026-09-23T20:00:00.000Z", [row({ x_handle: "a", rank: 1, rating: 900 })]);
+    finalSnap.final = true;
+    const unverified = snap(4, "2026-09-23T22:00:00.000Z", [row({ x_handle: "a", rank: 1, rating: 1000 })]);
+    unverified.verified = false;
+    const hourly = snap(4, "2026-09-23T18:00:00.000Z", [row({ x_handle: "a", rank: 1, rating: 1100 })]);
+    const latest = snap(4, "2026-09-24T22:07:00.000Z", [row({ x_handle: "a", rank: 1, rating: 1200 })]);
+    const plan = dayMoverPlan(
+      [finalSnap, hourly, unverified, latest],
+      "2026-09-23T07:00:00Z",
+      Date.parse("2026-09-24T22:07:00.000Z"),
+    );
+    assert.equal(plan.kind, "snapshots");
+    if (plan.kind === "snapshots") assert.equal(plan.from.captured_at, hourly.captured_at);
+  });
 });
 
 describe("entrants and exits", () => {
@@ -218,6 +298,31 @@ describe("frequency", () => {
     assert.equal(frequencySeason(6, 10), "current");
   });
 
+  it("the S4 snapshot count goes from 20 to 19 once the 2:39 PM PT unverified snapshot is excluded", () => {
+    const snaps = Array.from({ length: 19 }, (_, index) =>
+      snap(4, `2026-09-23T${String(index).padStart(2, "0")}:00:00.000Z`, [row({ x_handle: "a", rank: 1, rating: 1400 })]),
+    );
+    const unverified = snap(4, "2026-09-24T21:39:55.000Z", [row({ x_handle: "a", rank: 1, rating: 1583 })], 20);
+    unverified.verified = false;
+    snaps.push(unverified);
+    assert.equal(snaps.length, 20);
+    assert.equal(movementSnaps(snaps).length, 19);
+    assert.equal(appearances(snaps).snapshots, 19);
+  });
+
+  it("counts rank 1 through 20 and skips a tied player past rank 20", () => {
+    const table = appearances([
+      snap(
+        4,
+        "2026-09-24T21:36:57.000Z",
+        [row({ x_handle: "in", rank: 20, rating: 1400 }), row({ x_handle: "tie", rank: 21, rating: 1400 })],
+        100,
+      ),
+    ]);
+    assert.equal(table.rows.find((item) => item.handle === "in")?.appearances, 1);
+    assert.equal(table.rows.find((item) => item.handle === "tie"), undefined);
+  });
+
   it("includes players tied on the cutoff count", () => {
     const rows = [
       { handle: "a", appearances: 3 },
@@ -279,6 +384,9 @@ describe("freshness", () => {
     assert.equal(isStale("2026-09-24T11:00:00Z", "2026-09-24T08:00:00Z", now), false);
     assert.equal(justReset(23.4), true);
     assert.equal(justReset(24), false);
+    assert.equal(seasonEnded("2026-09-26T07:00:00Z", Date.parse("2026-09-26T07:01:00Z")), true);
+    assert.equal(seasonEnded("2026-09-26T07:00:00Z", Date.parse("2026-09-26T06:00:00Z")), false);
+    assert.equal(endedWaitingText(4, "12:00 AM PT, Sep 26"), "Season 4 ended 12:00 AM PT, Sep 26; waiting for next snapshot");
   });
 });
 

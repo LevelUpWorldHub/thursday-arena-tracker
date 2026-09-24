@@ -106,6 +106,7 @@ for (const number of await seasonNumbers()) {
       captured_at: snap.captured_at,
       count: snap.count,
       final: snap.final === true,
+      ...(snap.complete === false ? { complete: false } : {}),
       ...(snap.verified === false ? { verified: false } : {}),
       entries: snap.entries.map((entry) => slimEntry(entry, indexInSeason === lastIndex || snap.final)),
     })),

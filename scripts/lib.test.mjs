@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { describe, it } from "node:test";
 import {
+  applyEndedSeason,
   fingerprint,
+  indexSignature,
+  normalizeSnap,
   shouldWriteHourly,
   validateLeaderboard,
   validateSeasonIndex,
@@ -70,6 +73,58 @@ describe("published site data", () => {
         assert.equal(snap.season, undefined);
       }
     }
+  });
+});
+
+describe("season end time", () => {
+  it("does not overwrite an end time from a lagged /season current start", () => {
+    const index = {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+      next: { number: 5, state: "scheduled", starts_at: "2026-09-26T07:00:00Z", ends_at: null },
+      seasons: [{ number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" }],
+    };
+    applyEndedSeason(index, 4, 5);
+    assert.equal(index.seasons.find((season) => season.number === 4).ends_at, "2026-09-26T07:00:00Z");
+  });
+
+  it("uses the next season start when /season has not caught up and the end is unknown", () => {
+    const index = {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+      next: { number: 5, state: "scheduled", starts_at: "2026-09-26T07:00:00Z", ends_at: null },
+      seasons: [{ number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: null }],
+    };
+    applyEndedSeason(index, 4, 5);
+    assert.equal(index.seasons.find((season) => season.number === 4).ends_at, "2026-09-26T07:00:00Z");
+  });
+
+  it("leaves the end unset when the lagged clock has no successor start", () => {
+    const index = {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: null },
+      next: null,
+      seasons: [{ number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z" }],
+    };
+    applyEndedSeason(index, 4, 5);
+    assert.equal(index.seasons.find((season) => season.number === 4).ends_at, null);
+  });
+});
+
+describe("index commits", () => {
+  it("ignores last-checked timestamps", () => {
+    const before = { last_checked: "2026-09-24T00:00:00Z", generated_at: "2026-09-24T00:00:00Z", current: { number: 4 } };
+    const after = { last_checked: "2026-09-24T01:00:00Z", generated_at: "2026-09-24T01:00:00Z", current: { number: 4 } };
+    assert.equal(indexSignature(before), indexSignature(after));
+  });
+});
+
+describe("stored season 4 snapshots", () => {
+  it("keeps the unverified 2:39 PM PT snapshot in the archive and drops the 3:07 PM duplicate", async () => {
+    const day = JSON.parse(await readFile(new URL("../data/seasons/4/snapshots/2026-09-24.json", import.meta.url), "utf8"));
+    const earlier = JSON.parse(await readFile(new URL("../data/seasons/4/snapshots/2026-09-23.json", import.meta.url), "utf8"));
+    const snaps = [...earlier.snapshots, ...day.snapshots].map((raw) => normalizeSnap({ ...raw, season: raw.season || { number: 4 } }));
+    assert.equal(snaps.some((snap) => snap.captured_at === "2026-09-24T22:07:18.845Z"), false);
+    const unverified = snaps.filter((snap) => snap.verified === false);
+    assert.equal(unverified.length, 1);
+    assert.equal(unverified[0].captured_at, "2026-09-24T21:39:55.000Z");
   });
 });
 

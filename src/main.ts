@@ -9,13 +9,16 @@ import {
   climbers,
   dayMoverPlan,
   defaultChartSeason,
+  endedWaitingText,
   fallers,
   frequencySeason,
   justReset,
+  movementSnaps,
   moversSinceStart,
   officialPrevious,
   rosterChanges,
   seasonAgeHours,
+  seasonEnded,
   seasonLabel,
   chartInstant,
   seriesFor,
@@ -36,6 +39,7 @@ type SiteSnap = {
   count: number;
   final?: boolean;
   verified?: boolean;
+  complete?: boolean;
   entries: Row[];
 };
 
@@ -146,6 +150,7 @@ function toSnaps(season: SiteSeason | null | undefined): Snap[] {
       season: season.number,
       final: snap.final,
       verified: snap.verified,
+      complete: snap.complete,
       entries: snap.entries,
     })),
   );
@@ -307,7 +312,11 @@ function paintChart(): void {
       for (const point of points) {
         const tr = el("tr");
         tr.append(
-          el("td", "", seasonLabel(point.season)),
+          el(
+            "td",
+            "",
+            `${seasonLabel(point.season)}${point.mark === "unverified" ? " · unverified" : point.mark === "final" ? " · final" : ""}`,
+          ),
           el("td", "", formatPt(point.t)),
           el("td", "num", String(point.rating)),
           el("td", "num", String(point.rank)),
@@ -353,12 +362,17 @@ function render(): void {
           rows: moversSinceStart(live.entries),
         }
       : { kind: "not-computed" as const, message: "No stored snapshots for this season yet." };
-  const week = weekMoverPlan(storedCurrent, current);
+  const countedCurrent = movementSnaps(storedCurrent);
+  const week = weekMoverPlan(storedCurrent, current, clock?.starts_at ?? null, now);
 
   document.title = `${seasonLabel(current)} ladder · Thursday Arena`;
-  seasonLine.textContent = clock?.ends_at
-    ? `${seasonLabel(current)} · ends ${formatPt(clock.ends_at)}`
-    : `${seasonLabel(current)}${clock?.state ? ` · ${clock.state}` : ""}`;
+  if (clock?.ends_at && seasonEnded(clock.ends_at, now)) {
+    seasonLine.textContent = endedWaitingText(current, formatPt(clock.ends_at));
+  } else if (clock?.ends_at) {
+    seasonLine.textContent = `${seasonLabel(current)} · ends ${formatPt(clock.ends_at)}`;
+  } else {
+    seasonLine.textContent = `${seasonLabel(current)}${clock?.state ? ` · ${clock.state}` : ""}`;
+  }
   freshness.replaceChildren();
   if (latest) freshness.append(document.createTextNode(`Ladder snapshot: ${formatPt(latest.captured_at)}`));
   else freshness.append(document.createTextNode("Ladder snapshot: none stored yet"));
@@ -414,14 +428,17 @@ function render(): void {
   } else if (!fallbackSnap) {
     previousRoot.append(el("p", "note", "Official final standings are not in the stored archive yet."));
   } else {
-    const official = Boolean(cardSeason?.has_final);
+    const official = Boolean(cardSeason?.has_final || fallbackSnap.final);
+    const partial = fallbackSnap.complete === false;
     previousRoot.append(
       el(
         "p",
         "note",
-        official
-          ? `Official final fetched for ${seasonLabel(previousNumber)} · ${formatPt(fallbackSnap.captured_at)}`
-          : `Last snapshot, not official final · ${formatPt(fallbackSnap.captured_at)}`,
+        partial
+          ? `Partial final for ${seasonLabel(previousNumber)} (paging stopped early) · ${formatPt(fallbackSnap.captured_at)}`
+          : official
+            ? `Official final fetched for ${seasonLabel(previousNumber)} · ${formatPt(fallbackSnap.captured_at)}`
+            : `Last snapshot, not official final · ${formatPt(fallbackSnap.captured_at)}`,
       ),
     );
     const scroll = el("div", "table-scroll");
@@ -486,12 +503,13 @@ function render(): void {
     } else {
       weekCard.append(el("p", "note", "Not enough stored snapshots to compare season-to-date."));
     }
-    weekCard.append(el("h3", "", "Season finish vs previous season"));
-    weekCard.append(el("p", "note", "From last_season on the latest stored board. This is not a 7-day window."));
-    if (!week.versusPrevious.length) weekCard.append(el("p", "note", "No previous-season fields on that board."));
-    else {
+    const finishSeason = previousNumber;
+    const finishRows = finishSeason == null ? [] : week.versusPrevious.filter((row) => row.previousSeason === finishSeason);
+    if (finishSeason != null && finishRows.length) {
+      weekCard.append(el("h3", "", `Current rating vs ${seasonLabel(finishSeason)} finish (not a mover)`));
+      weekCard.append(el("p", "note", "Players with no games this season are hidden. This is not a 24-hour or 7-day mover."));
       const list = el("ul", "clean");
-      for (const row of week.versusPrevious.slice(0, 8)) {
+      for (const row of finishRows.slice(0, 8)) {
         const item = el("li");
         item.append(
           el("strong", "", `@${row.handle}`),
@@ -512,12 +530,13 @@ function render(): void {
   rosterTitle.id = "roster-title";
   rosterRoot.append(rosterTitle);
   const blocks: { title: string; from: Snap | null; to: Snap | null; first: boolean }[] = [];
-  const previousSnap = storedCurrent.length >= 2 ? storedCurrent[storedCurrent.length - 2] : null;
+  const previousSnap = countedCurrent.length >= 2 ? countedCurrent[countedCurrent.length - 2] : null;
+  const countedLatest = countedCurrent[countedCurrent.length - 1] ?? null;
   blocks.push({
     title: "Vs previous snapshot",
     from: previousSnap,
-    to: latest,
-    first: storedCurrent.length < 2,
+    to: countedLatest,
+    first: countedCurrent.length < 2,
   });
   if (day.kind === "snapshots") {
     blocks.push({ title: "Vs the 24 hour snapshot", from: day.from, to: day.to, first: false });
@@ -570,15 +589,16 @@ function render(): void {
   const frequencyTitle = el("h2", "", "Top-20 appearances");
   frequencyTitle.id = "frequency-title";
   frequencyRoot.append(frequencyTitle);
-  const choice = frequencySeason(storedCurrent.length, previousSnaps.length);
-  const focusSnaps = choice === "previous" ? previousSnaps : storedCurrent;
+  const countedPrevious = movementSnaps(previousSnaps);
+  const choice = frequencySeason(countedCurrent.length, countedPrevious.length);
+  const focusSnaps = choice === "previous" ? countedPrevious : countedCurrent;
   const focusNumber = choice === "previous" && previousNumber ? previousNumber : current;
   if (choice === "previous") {
     frequencyRoot.append(
       el(
         "p",
         "note",
-        `${seasonLabel(current)} has ${storedCurrent.length} stored snapshots. Frequency uses ${seasonLabel(focusNumber)} until this season has at least 6.`,
+        `${seasonLabel(current)} has ${countedCurrent.length} verified snapshots. Frequency uses ${seasonLabel(focusNumber)} until this season has at least 6.`,
       ),
     );
   }

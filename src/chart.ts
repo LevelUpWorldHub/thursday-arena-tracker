@@ -79,7 +79,10 @@ export function mountChart(host: HTMLElement, segments: { season: number; points
       dot.setAttribute("cy", String(yFor(point.rating)));
       dot.setAttribute("r", "4");
       dot.setAttribute("fill", color);
-      dot.dataset.tip = `${seasonLabel(segment.season)} · ${formatPt(point.t)} · rating ${point.rating} · rank ${point.rank}`;
+      const mark = point.mark === "unverified" ? " · unverified" : point.mark === "final" ? " · official final" : "";
+      dot.dataset.tip = `${seasonLabel(segment.season)} · ${formatPt(point.t)} · rating ${point.rating} · rank ${point.rank}${mark}`;
+      if (point.mark === "unverified") dot.setAttribute("stroke", "#c4554a");
+      if (point.mark === "final") dot.setAttribute("stroke", "#f0c14a");
       svg.append(dot);
     }
     if (index > 0 && segment.points[0]) {

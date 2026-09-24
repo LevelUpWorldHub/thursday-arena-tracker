@@ -4,7 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
+  applyEndedSeason,
+  backfillEnds,
   fingerprint,
+  indexSignature,
   normalizeSnap,
   shouldWriteHourly,
   utcDay,
@@ -18,7 +21,7 @@ const seasonsRoot = path.join(root, "data/seasons");
 const API = "https://thursdayarena.com/api/public/v1";
 const CATALOG_URL = "https://thursdayarena.com/api/catalog";
 const USER_AGENT = "thursday-arena-tracker/1.0 (+https://github.com/LevelUpWorldHub/thursday-arena-tracker)";
-const FINAL_PAGE_CAP = 10;
+const FINAL_PAGE_CAP = 20;
 
 function setOutput(status) {
   if (!process.env.GITHUB_OUTPUT) return;
@@ -154,16 +157,16 @@ async function fetchPages(seasonNumber, maxPages, exhaustive) {
 async function maybeWriteFinal(previousNumber) {
   const file = path.join(seasonsRoot, String(previousNumber), "final.json");
   if (await exists(file)) {
-    console.log(`final for season ${previousNumber} already stored`);
-    return "exists";
+    const existing = await readJson(file);
+    if (existing.complete !== false) {
+      console.log(`final for season ${previousNumber} already stored`);
+      return "exists";
+    }
+    console.log(`retrying incomplete final for season ${previousNumber}`);
   }
   const fetched = await fetchPages(previousNumber, FINAL_PAGE_CAP, true);
   if (!fetched.ok) {
     console.error(`final skipped: ${fetched.error}`);
-    return "skipped";
-  }
-  if (!fetched.complete) {
-    console.error("final skipped: incomplete paging");
     return "skipped";
   }
   await mkdir(path.dirname(file), { recursive: true });
@@ -173,6 +176,7 @@ async function maybeWriteFinal(previousNumber) {
     `${JSON.stringify(
       {
         final: true,
+        complete: fetched.complete === true,
         captured_at: capturedAt,
         source: `${API}/leaderboard?season=${previousNumber}&limit=100`,
         verified: true,
@@ -185,7 +189,9 @@ async function maybeWriteFinal(previousNumber) {
       2,
     )}\n`,
   );
-  console.log(`wrote final season ${previousNumber} (${fetched.entries.length} rows, ${fetched.pages} pages)`);
+  console.log(
+    `wrote final season ${previousNumber} (${fetched.entries.length} rows, ${fetched.pages} pages, complete=${fetched.complete === true})`,
+  );
   return "wrote";
 }
 
@@ -238,6 +244,7 @@ async function main() {
   await runImport();
   const indexPath = path.join(seasonsRoot, "index.json");
   const index = (await exists(indexPath)) ? await readJson(indexPath) : { seasons: [] };
+  const signatureBefore = indexSignature(index);
   const checkedAt = new Date().toISOString();
 
   const seasonFetched = await fetchJson(`${API}/season`);
@@ -316,30 +323,21 @@ async function main() {
     first_snapshot: first,
     last_snapshot: last,
   });
-  if (Number.isFinite(storedCurrent) && incoming > storedCurrent && seasonIndex.ok && index.current) {
-    upsertSeason(index, storedCurrent, {
-      state: "ended",
-      ends_at: index.current.starts_at || checkedAt,
-    });
-  }
-  for (const season of index.seasons || []) {
-    if (season.ends_at || season.number >= incoming) continue;
-    const successor = (index.seasons || []).find((item) => item.number === season.number + 1);
-    const starts =
-      successor?.starts_at ||
-      (index.current?.number === season.number + 1 ? index.current.starts_at : null) ||
-      (index.next?.number === season.number + 1 ? index.next.starts_at : null);
-    if (starts) season.ends_at = starts;
-  }
+  applyEndedSeason(index, storedCurrent, incoming);
+  backfillEnds(index, incoming);
+  const materialIndex = indexSignature(index) !== signatureBefore;
   index.last_checked = checkedAt;
   index.generated_at = checkedAt;
-  await mkdir(seasonsRoot, { recursive: true });
-  await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
-
   const catalogStatus = await maybeWriteCatalog();
-  const status = wroteLadder || wroteFinal || catalogStatus === "wrote" || !same ? "wrote" : "deduped";
-  // last_checked always changes the index, so the commit step should see a diff.
-  setOutput(wroteLadder || wroteFinal || catalogStatus === "wrote" ? "wrote" : "deduped");
+  if (materialIndex || wroteLadder || wroteFinal || catalogStatus === "wrote") {
+    await mkdir(seasonsRoot, { recursive: true });
+    await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+  } else {
+    console.log("index timestamps only; leaving index.json unchanged");
+  }
+
+  const status = wroteLadder || wroteFinal || catalogStatus === "wrote" || materialIndex ? "wrote" : "deduped";
+  setOutput(status);
   console.log(`status=${status}`);
 }
 
