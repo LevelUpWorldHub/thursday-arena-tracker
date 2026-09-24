@@ -113,8 +113,24 @@ for (const number of await seasonNumbers()) {
   });
 }
 
+async function cachedCheck() {
+  try {
+    const cache = await readJson(path.join(root, ".cache", "last-check.json"));
+    return typeof cache?.checked_at === "string" ? cache.checked_at : null;
+  } catch {
+    return null;
+  }
+}
+
+function preferNewerCheck(committed, cached) {
+  const committedMs = Date.parse(committed || "");
+  const cachedMs = Date.parse(cached || "");
+  if (Number.isFinite(cachedMs) && (!Number.isFinite(committedMs) || cachedMs > committedMs)) return cached;
+  return committed || null;
+}
+
 const publicIndex = {
-  last_checked: index?.last_checked || null,
+  last_checked: preferNewerCheck(index?.last_checked || null, await cachedCheck()),
   current: index?.current
     ? {
         number: index.current.number,

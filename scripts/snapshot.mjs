@@ -121,7 +121,7 @@ async function writeHourly(snap) {
   console.log(`wrote hourly s${snap.season.number} ${day} (${doc.snapshots.length} that day)`);
 }
 
-async function fetchPages(seasonNumber, maxPages, exhaustive) {
+async function fetchPages(seasonNumber, maxPages, exhaustive, fetchImpl = fetchJson) {
   const entries = [];
   let season = null;
   let cursor = null;
@@ -131,7 +131,7 @@ async function fetchPages(seasonNumber, maxPages, exhaustive) {
     url.searchParams.set("limit", "100");
     if (seasonNumber != null) url.searchParams.set("season", String(seasonNumber));
     if (cursor) url.searchParams.set("cursor", cursor);
-    const fetched = await fetchJson(url);
+    const fetched = await fetchImpl(url);
     if (!fetched.ok) return { ok: false, error: fetched.error };
     const valid = validateLeaderboard(fetched.body);
     if (!valid.ok) return { ok: false, error: valid.error };
@@ -154,8 +154,11 @@ async function fetchPages(seasonNumber, maxPages, exhaustive) {
   return { ok: false, error: `stopped after ${maxPages} pages with more cursor pages left` };
 }
 
-async function maybeWriteFinal(previousNumber) {
-  const file = path.join(seasonsRoot, String(previousNumber), "final.json");
+export async function maybeWriteFinal(previousNumber, options = {}) {
+  const seasonsDir = options.seasonsRoot || seasonsRoot;
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
+  const file = path.join(seasonsDir, String(previousNumber), "final.json");
   if (await exists(file)) {
     const existing = await readJson(file);
     if (existing.complete !== false) {
@@ -164,13 +167,13 @@ async function maybeWriteFinal(previousNumber) {
     }
     console.log(`retrying incomplete final for season ${previousNumber}`);
   }
-  const fetched = await fetchPages(previousNumber, FINAL_PAGE_CAP, true);
+  const fetched = await fetchPages(previousNumber, FINAL_PAGE_CAP, false, fetchImpl);
   if (!fetched.ok) {
     console.error(`final skipped: ${fetched.error}`);
     return "skipped";
   }
   await mkdir(path.dirname(file), { recursive: true });
-  const capturedAt = new Date().toISOString();
+  const capturedAt = clock().toISOString();
   await writeFile(
     file,
     `${JSON.stringify(
@@ -195,15 +198,17 @@ async function maybeWriteFinal(previousNumber) {
   return "wrote";
 }
 
-async function maybeWriteCatalog() {
-  const day = utcDay(new Date().toISOString());
+async function maybeWriteCatalog(options = {}) {
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
+  const day = utcDay(clock().toISOString());
   const dir = path.join(root, "data/catalog");
   const file = path.join(dir, `${day}.json`);
   if (await exists(file)) {
     console.log(`catalog ${day} already stored`);
     return "exists";
   }
-  const fetched = await fetchJson(CATALOG_URL);
+  const fetched = await fetchImpl(CATALOG_URL);
   if (!fetched.ok) {
     console.error(`catalog skipped: ${fetched.error}`);
     return "skipped";
@@ -218,7 +223,7 @@ async function maybeWriteCatalog() {
     file,
     `${JSON.stringify(
       {
-        captured_at: new Date().toISOString(),
+        captured_at: clock().toISOString(),
         source: CATALOG_URL,
         count: valid.bots.length,
         bots: valid.bots,
@@ -240,18 +245,26 @@ function upsertSeason(index, number, patch) {
   index.seasons = rest.sort((a, b) => a.number - b.number);
 }
 
-async function main() {
+async function writeLastCheck(checkedAt) {
+  const dir = path.join(root, ".cache");
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, "last-check.json"), `${JSON.stringify({ checked_at: checkedAt }, null, 2)}\n`);
+}
+
+export async function runSnapshot(options = {}) {
+  const fetchImpl = options.fetchJson || fetchJson;
+  const clock = options.now || (() => new Date());
   await runImport();
   const indexPath = path.join(seasonsRoot, "index.json");
   const index = (await exists(indexPath)) ? await readJson(indexPath) : { seasons: [] };
   const signatureBefore = indexSignature(index);
-  const checkedAt = new Date().toISOString();
+  const checkedAt = clock().toISOString();
 
-  const seasonFetched = await fetchJson(`${API}/season`);
+  const seasonFetched = await fetchImpl(`${API}/season`);
   const seasonIndex = seasonFetched.ok ? validateSeasonIndex(seasonFetched.body) : { ok: false, error: seasonFetched.error };
   if (!seasonIndex.ok) console.error(`season index skipped: ${seasonIndex.error}`);
 
-  const board = await fetchPages(null, 1, false);
+  const board = await fetchPages(null, 1, false, fetchImpl);
   if (!board.ok) {
     console.error(`ladder skipped: ${board.error}`);
     setOutput("skipped");
@@ -267,7 +280,7 @@ async function main() {
 
   let wroteFinal = false;
   const closeFinal = async (number) => {
-    const finalStatus = await maybeWriteFinal(number);
+    const finalStatus = await maybeWriteFinal(number, { fetchJson: fetchImpl, now: clock });
     if (finalStatus === "wrote") wroteFinal = true;
     if (finalStatus === "wrote" || finalStatus === "exists") {
       upsertSeason(index, number, { state: "ended" });
@@ -288,7 +301,7 @@ async function main() {
   const nextFp = fingerprint(incoming, board.entries);
   const same = latest && fingerprint(latest.season.number, latest.entries) === nextFp;
   let wroteLadder = false;
-  const capturedAt = new Date().toISOString();
+  const capturedAt = clock().toISOString();
   if (same) {
     console.log(`season ${incoming} board unchanged; not writing a duplicate snapshot`);
   } else {
@@ -328,20 +341,25 @@ async function main() {
   const materialIndex = indexSignature(index) !== signatureBefore;
   index.last_checked = checkedAt;
   index.generated_at = checkedAt;
-  const catalogStatus = await maybeWriteCatalog();
+  const catalogStatus = await maybeWriteCatalog({ fetchJson: fetchImpl, now: clock });
   if (materialIndex || wroteLadder || wroteFinal || catalogStatus === "wrote") {
     await mkdir(seasonsRoot, { recursive: true });
     await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
   } else {
     console.log("index timestamps only; leaving index.json unchanged");
   }
+  await writeLastCheck(checkedAt);
 
   const status = wroteLadder || wroteFinal || catalogStatus === "wrote" || materialIndex ? "wrote" : "deduped";
   setOutput(status);
   console.log(`status=${status}`);
+  return status;
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) {
+  runSnapshot().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}

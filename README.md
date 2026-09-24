@@ -32,12 +32,13 @@ hourly GitHub Action (minute 17, or workflow_dispatch)
   append data/seasons/<number>/snapshots/<UTC-date>.json unless the board is unchanged
   GET /api/catalog once per UTC day → data/catalog/<UTC-date>.json
   commit data/ only when files changed
+  record the check time in gitignored .cache/last-check.json
 pages build
   scripts/build-data.mjs → public/data/site-data.json
   vite build (GitHub Pages base /thursday-arena-tracker/, Vercel base /)
 ```
 
-The leaderboard allows browser CORS, so the top 20 can refresh live. The catalog does not, so the page only reads the stored catalog summary. An HTTP error, a non-JSON body, or a season number below the stored current season does not write a snapshot. An empty ladder is written only for HTTP 200 with a valid season and `data: []`. Identical boards are not appended. A run that only moves `last_checked` does not commit `index.json`.
+The leaderboard allows browser CORS, so the top 20 can refresh live. The catalog does not, so the page only reads the stored catalog summary. An HTTP error, a non-JSON body, or a season number below the stored current season does not write a snapshot. An empty ladder is written only for HTTP 200 with a valid season and `data: []`. Identical boards are not appended. A run that only moves `last_checked` does not commit `index.json`. That run still writes the check time to gitignored `.cache/last-check.json`, and the site build uses it for `last_checked` when it is newer than the committed value.
 
 `leaderboard?season=<number>` is the final-standings query. `cursor` is the paging parameter (`next_cursor` in the query string is ignored). `limit=100` works. A missing season returns 404 `season_not_found`.
 
