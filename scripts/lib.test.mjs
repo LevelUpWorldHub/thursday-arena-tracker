@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { describe, it } from "node:test";
+import { buildSiteData } from "./build-data.mjs";
 import {
   applyEndedSeason,
   fingerprint,
@@ -57,22 +60,89 @@ describe("seed provenance", () => {
   });
 });
 
+async function writeJson(file, value) {
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function player(rank, handle) {
+  return { rank, x_handle: handle, rating: 1100, wins: 1, losses: 0, draws: 0, ranked: true };
+}
+
 describe("published site data", () => {
-  it("keeps row counts and does not publish mismatched season names", async () => {
-    const site = JSON.parse(await readFile(new URL("../public/data/site-data.json", import.meta.url), "utf8"));
-    const blob = JSON.stringify(site);
-    assert.equal(blob.includes("Season 1"), false);
-    const counts = site.seasons.flatMap((season) => season.snapshots.map((snap) => snap.count));
-    assert.ok(counts.includes(100));
-    assert.ok(counts.includes(20));
-    for (const season of site.seasons) {
-      assert.equal(typeof season.number, "number");
-      assert.equal(season.snapshot_count, season.snapshots.length);
-      for (const snap of season.snapshots) {
-        assert.equal(snap.entries.length > 0, true);
-        assert.equal(snap.season, undefined);
-      }
-    }
+  it("publishes a fixture without copying a mismatched season name", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "arena-site-"));
+    const seasons = path.join(dir, "data/seasons");
+    await writeJson(path.join(seasons, "index.json"), {
+      last_checked: "2026-09-24T22:00:00.000Z",
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+      seasons: [{ number: 4, state: "active" }],
+    });
+    await writeJson(path.join(seasons, "4/snapshots/2026-09-24.json"), {
+      date: "2026-09-24",
+      season_number: 4,
+      snapshots: [
+        {
+          captured_at: "2026-09-24T18:00:00.000Z",
+          verified: true,
+          season: { number: 4, name: "Season 1", state: "active" },
+          count: 1,
+          entries: [player(1, "alpha")],
+        },
+      ],
+    });
+    const site = await buildSiteData({ root: dir, outFile: path.join(dir, "site-data.json") });
+    assert.equal(JSON.stringify(site).includes("Season 1"), false);
+    assert.equal(site.seasons.length, 1);
+    assert.equal(site.seasons[0].snapshot_count, site.seasons[0].snapshots.length);
+    assert.equal(site.seasons[0].snapshots[0].entries.length, 1);
+    assert.equal(site.seasons[0].snapshots[0].season, undefined);
+  });
+
+  it("publishes an empty current-season snapshot", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "arena-empty-"));
+    const seasons = path.join(dir, "data/seasons");
+    await writeJson(path.join(seasons, "index.json"), {
+      last_checked: "2026-09-26T07:17:00.000Z",
+      current: { number: 5, state: "active", starts_at: "2026-09-26T07:00:00Z", ends_at: null },
+      seasons: [
+        { number: 4, state: "ended", ends_at: "2026-09-26T07:00:00Z" },
+        { number: 5, state: "active", starts_at: "2026-09-26T07:00:00Z" },
+      ],
+    });
+    await writeJson(path.join(seasons, "4/snapshots/2026-09-24.json"), {
+      date: "2026-09-24",
+      season_number: 4,
+      snapshots: [
+        {
+          captured_at: "2026-09-24T22:00:00.000Z",
+          verified: true,
+          season: { number: 4, state: "active" },
+          count: 1,
+          entries: [player(1, "alpha")],
+        },
+      ],
+    });
+    await writeJson(path.join(seasons, "5/snapshots/2026-09-26.json"), {
+      date: "2026-09-26",
+      season_number: 5,
+      snapshots: [
+        {
+          captured_at: "2026-09-26T07:17:00.000Z",
+          verified: true,
+          season: { number: 5, state: "active" },
+          count: 0,
+          entries: [],
+        },
+      ],
+    });
+    const site = await buildSiteData({ root: dir, outFile: path.join(dir, "site-data.json") });
+    const current = site.seasons.find((season) => season.number === 5);
+    assert.equal(site.index.current.number, 5);
+    assert.equal(current.snapshot_count, 1);
+    assert.equal(current.snapshots[0].count, 0);
+    assert.equal(current.snapshots[0].entries.length, 0);
+    assert.equal(site.seasons.find((season) => season.number === 4).snapshots[0].entries.length, 1);
   });
 });
 

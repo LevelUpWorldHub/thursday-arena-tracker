@@ -58,7 +58,7 @@ npm run build
 
 ## GitHub Pages
 
-The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so the hourly job can push. No personal token and no paid services.
+The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages. Pull requests run the tests in `ci.yml`; the hourly job does not, so a test cannot block a deploy. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so the hourly job can push. No personal token and no paid services.
 
 ## Linking Vercel later
 
