@@ -1,0 +1,2970 @@
+{
+  "date": "2026-09-18",
+  "season_number": 2,
+  "snapshots": [
+    {
+      "captured_at": "2026-09-18T00:22:51.000Z",
+      "source": "local-hourly-watch:runs/20260917-1722/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 20,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 2,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 3,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 4,
+          "x_handle": "breezeeoo",
+          "rating": 1213,
+          "wins": 26,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 5,
+          "x_handle": "izzat316",
+          "rating": 1212,
+          "wins": 29,
+          "losses": 14,
+          "draws": 6
+        },
+        {
+          "rank": 6,
+          "x_handle": "blacksheepjav",
+          "rating": 1209,
+          "wins": 26,
+          "losses": 3,
+          "draws": 1
+        },
+        {
+          "rank": 7,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 8,
+          "x_handle": "diamondhanddie",
+          "rating": 1202,
+          "wins": 26,
+          "losses": 7,
+          "draws": 1
+        },
+        {
+          "rank": 9,
+          "x_handle": "syaor4n",
+          "rating": 1176,
+          "wins": 20,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 10,
+          "x_handle": "notabot",
+          "rating": 1166,
+          "wins": 47,
+          "losses": 24,
+          "draws": 10
+        },
+        {
+          "rank": 11,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 12,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 13,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 14,
+          "x_handle": "williamcha1503",
+          "rating": 1120,
+          "wins": 16,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 15,
+          "x_handle": "bigbojangles_",
+          "rating": 1119,
+          "wins": 14,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 16,
+          "x_handle": "forethoughttech",
+          "rating": 1118,
+          "wins": 25,
+          "losses": 12,
+          "draws": 1
+        },
+        {
+          "rank": 17,
+          "x_handle": "ethanamitchell",
+          "rating": 1116,
+          "wins": 17,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 18,
+          "x_handle": "itzjonas",
+          "rating": 1116,
+          "wins": 68,
+          "losses": 59,
+          "draws": 23
+        },
+        {
+          "rank": 19,
+          "x_handle": "eveflamingo",
+          "rating": 1108,
+          "wins": 24,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 20,
+          "x_handle": "leckan_m",
+          "rating": 1106,
+          "wins": 14,
+          "losses": 7,
+          "draws": 1
+        }
+      ]
+    },
+    {
+      "captured_at": "2026-09-18T01:26:36.000Z",
+      "source": "local-hourly-watch:runs/20260917-1826/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 20,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "omlejmi",
+          "rating": 1294,
+          "wins": 50,
+          "losses": 19,
+          "draws": 3
+        },
+        {
+          "rank": 2,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 3,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 4,
+          "x_handle": "izzat316",
+          "rating": 1255,
+          "wins": 55,
+          "losses": 29,
+          "draws": 10
+        },
+        {
+          "rank": 5,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 6,
+          "x_handle": "blacksheepjav",
+          "rating": 1210,
+          "wins": 27,
+          "losses": 4,
+          "draws": 2
+        },
+        {
+          "rank": 7,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 8,
+          "x_handle": "diamondhanddie",
+          "rating": 1181,
+          "wins": 32,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 9,
+          "x_handle": "syaor4n",
+          "rating": 1176,
+          "wins": 20,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 10,
+          "x_handle": "starz_zps",
+          "rating": 1153,
+          "wins": 21,
+          "losses": 9,
+          "draws": 8
+        },
+        {
+          "rank": 11,
+          "x_handle": "notabot",
+          "rating": 1143,
+          "wins": 63,
+          "losses": 39,
+          "draws": 17
+        },
+        {
+          "rank": 12,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 13,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 14,
+          "x_handle": "jeremymlucy",
+          "rating": 1132,
+          "wins": 18,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 15,
+          "x_handle": "itzjonas",
+          "rating": 1131,
+          "wins": 88,
+          "losses": 74,
+          "draws": 28
+        },
+        {
+          "rank": 16,
+          "x_handle": "breezeeoo",
+          "rating": 1128,
+          "wins": 33,
+          "losses": 17,
+          "draws": 8
+        },
+        {
+          "rank": 17,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 18,
+          "x_handle": "williamcha1503",
+          "rating": 1120,
+          "wins": 16,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 19,
+          "x_handle": "bigbojangles_",
+          "rating": 1119,
+          "wins": 14,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 20,
+          "x_handle": "forethoughttech",
+          "rating": 1118,
+          "wins": 25,
+          "losses": 12,
+          "draws": 1
+        }
+      ]
+    },
+    {
+      "captured_at": "2026-09-18T02:20:14.000Z",
+      "source": "local-hourly-watch:runs/20260917-1920/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 20,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "omlejmi",
+          "rating": 1331,
+          "wins": 64,
+          "losses": 20,
+          "draws": 5
+        },
+        {
+          "rank": 2,
+          "x_handle": "ryanmcadams",
+          "rating": 1325,
+          "wins": 111,
+          "losses": 31,
+          "draws": 15
+        },
+        {
+          "rank": 3,
+          "x_handle": "izzat316",
+          "rating": 1296,
+          "wins": 78,
+          "losses": 33,
+          "draws": 14
+        },
+        {
+          "rank": 4,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 5,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 6,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 7,
+          "x_handle": "blacksheepjav",
+          "rating": 1210,
+          "wins": 27,
+          "losses": 4,
+          "draws": 2
+        },
+        {
+          "rank": 8,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 9,
+          "x_handle": "diamondhanddie",
+          "rating": 1181,
+          "wins": 32,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 10,
+          "x_handle": "syaor4n",
+          "rating": 1176,
+          "wins": 20,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 11,
+          "x_handle": "prshannon_",
+          "rating": 1160,
+          "wins": 19,
+          "losses": 7,
+          "draws": 1
+        },
+        {
+          "rank": 12,
+          "x_handle": "starz_zps",
+          "rating": 1153,
+          "wins": 21,
+          "losses": 9,
+          "draws": 8
+        },
+        {
+          "rank": 13,
+          "x_handle": "breezeeoo",
+          "rating": 1144,
+          "wins": 42,
+          "losses": 22,
+          "draws": 9
+        },
+        {
+          "rank": 14,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 15,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 16,
+          "x_handle": "jeremymlucy",
+          "rating": 1132,
+          "wins": 18,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 17,
+          "x_handle": "itzjonas",
+          "rating": 1131,
+          "wins": 88,
+          "losses": 74,
+          "draws": 28
+        },
+        {
+          "rank": 18,
+          "x_handle": "gravitatecre",
+          "rating": 1129,
+          "wins": 264,
+          "losses": 227,
+          "draws": 67
+        },
+        {
+          "rank": 19,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 20,
+          "x_handle": "williamcha1503",
+          "rating": 1120,
+          "wins": 16,
+          "losses": 8,
+          "draws": 3
+        }
+      ]
+    },
+    {
+      "captured_at": "2026-09-18T15:43:27.000Z",
+      "source": "local-hourly-watch:runs/20260918-0842/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 100,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "omlejmi",
+          "rating": 1500,
+          "wins": 202,
+          "losses": 24,
+          "draws": 11
+        },
+        {
+          "rank": 2,
+          "x_handle": "tetsuoai",
+          "rating": 1439,
+          "wins": 1576,
+          "losses": 421,
+          "draws": 197
+        },
+        {
+          "rank": 3,
+          "x_handle": "izzat316",
+          "rating": 1409,
+          "wins": 256,
+          "losses": 44,
+          "draws": 24
+        },
+        {
+          "rank": 4,
+          "x_handle": "ggleandro",
+          "rating": 1361,
+          "wins": 88,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 5,
+          "x_handle": "jsduren",
+          "rating": 1343,
+          "wins": 71,
+          "losses": 10,
+          "draws": 9
+        },
+        {
+          "rank": 6,
+          "x_handle": "syaor4n",
+          "rating": 1329,
+          "wins": 192,
+          "losses": 21,
+          "draws": 16
+        },
+        {
+          "rank": 7,
+          "x_handle": "notabot",
+          "rating": 1303,
+          "wins": 172,
+          "losses": 65,
+          "draws": 24
+        },
+        {
+          "rank": 8,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 9,
+          "x_handle": "myrdania",
+          "rating": 1264,
+          "wins": 60,
+          "losses": 13,
+          "draws": 4
+        },
+        {
+          "rank": 10,
+          "x_handle": "ternquest_com",
+          "rating": 1263,
+          "wins": 118,
+          "losses": 37,
+          "draws": 17
+        },
+        {
+          "rank": 11,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 12,
+          "x_handle": "breezeeoo",
+          "rating": 1254,
+          "wins": 83,
+          "losses": 27,
+          "draws": 11
+        },
+        {
+          "rank": 13,
+          "x_handle": "devtony",
+          "rating": 1248,
+          "wins": 276,
+          "losses": 309,
+          "draws": 33
+        },
+        {
+          "rank": 14,
+          "x_handle": "prshannon_",
+          "rating": 1246,
+          "wins": 44,
+          "losses": 10,
+          "draws": 2
+        },
+        {
+          "rank": 15,
+          "x_handle": "lucataco",
+          "rating": 1241,
+          "wins": 94,
+          "losses": 49,
+          "draws": 24
+        },
+        {
+          "rank": 16,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 17,
+          "x_handle": "yujules44768",
+          "rating": 1222,
+          "wins": 31,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 18,
+          "x_handle": "arminsolecki",
+          "rating": 1208,
+          "wins": 30,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 19,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 20,
+          "x_handle": "gabriel_x86",
+          "rating": 1204,
+          "wins": 209,
+          "losses": 108,
+          "draws": 31
+        },
+        {
+          "rank": 21,
+          "x_handle": "knownasdaniel",
+          "rating": 1201,
+          "wins": 22,
+          "losses": 4,
+          "draws": 2
+        },
+        {
+          "rank": 22,
+          "x_handle": "jeremymlucy",
+          "rating": 1196,
+          "wins": 33,
+          "losses": 13,
+          "draws": 6
+        },
+        {
+          "rank": 23,
+          "x_handle": "ryaske",
+          "rating": 1185,
+          "wins": 326,
+          "losses": 59,
+          "draws": 40
+        },
+        {
+          "rank": 24,
+          "x_handle": "diamondhanddie",
+          "rating": 1181,
+          "wins": 32,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 25,
+          "x_handle": "blacksheepjav",
+          "rating": 1171,
+          "wins": 28,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 26,
+          "x_handle": "toryteach",
+          "rating": 1169,
+          "wins": 44,
+          "losses": 19,
+          "draws": 5
+        },
+        {
+          "rank": 27,
+          "x_handle": "neo_of_nazareth",
+          "rating": 1167,
+          "wins": 20,
+          "losses": 4,
+          "draws": 1
+        },
+        {
+          "rank": 28,
+          "x_handle": "cmoyyds",
+          "rating": 1159,
+          "wins": 55,
+          "losses": 21,
+          "draws": 7
+        },
+        {
+          "rank": 29,
+          "x_handle": "wolfe_jam",
+          "rating": 1155,
+          "wins": 48,
+          "losses": 28,
+          "draws": 19
+        },
+        {
+          "rank": 30,
+          "x_handle": "starz_zps",
+          "rating": 1153,
+          "wins": 21,
+          "losses": 9,
+          "draws": 8
+        },
+        {
+          "rank": 31,
+          "x_handle": "dnl23",
+          "rating": 1149,
+          "wins": 35,
+          "losses": 12,
+          "draws": 2
+        },
+        {
+          "rank": 32,
+          "x_handle": "vanellixluck",
+          "rating": 1144,
+          "wins": 21,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 33,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 34,
+          "x_handle": "relaxjulio",
+          "rating": 1142,
+          "wins": 14,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 35,
+          "x_handle": "jennahalebooks",
+          "rating": 1140,
+          "wins": 18,
+          "losses": 6,
+          "draws": 5
+        },
+        {
+          "rank": 36,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 37,
+          "x_handle": "reeeehhh1",
+          "rating": 1135,
+          "wins": 13,
+          "losses": 2,
+          "draws": 4
+        },
+        {
+          "rank": 38,
+          "x_handle": "jusrelax",
+          "rating": 1133,
+          "wins": 19,
+          "losses": 7,
+          "draws": 5
+        },
+        {
+          "rank": 39,
+          "x_handle": "lg65847489",
+          "rating": 1133,
+          "wins": 10,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 40,
+          "x_handle": "itzjonas",
+          "rating": 1131,
+          "wins": 88,
+          "losses": 74,
+          "draws": 28
+        },
+        {
+          "rank": 41,
+          "x_handle": "kshv86",
+          "rating": 1124,
+          "wins": 22,
+          "losses": 10,
+          "draws": 1
+        },
+        {
+          "rank": 42,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 43,
+          "x_handle": "bigbojangles_",
+          "rating": 1119,
+          "wins": 14,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 44,
+          "x_handle": "puppythick16",
+          "rating": 1119,
+          "wins": 12,
+          "losses": 2,
+          "draws": 6
+        },
+        {
+          "rank": 45,
+          "x_handle": "forethoughttech",
+          "rating": 1118,
+          "wins": 25,
+          "losses": 12,
+          "draws": 1
+        },
+        {
+          "rank": 46,
+          "x_handle": "ethanamitchell",
+          "rating": 1116,
+          "wins": 17,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 47,
+          "x_handle": "lighttwrecker",
+          "rating": 1113,
+          "wins": 21,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 48,
+          "x_handle": "the_ryyy",
+          "rating": 1110,
+          "wins": 38,
+          "losses": 13,
+          "draws": 11
+        },
+        {
+          "rank": 49,
+          "x_handle": "roostercogdick",
+          "rating": 1109,
+          "wins": 90,
+          "losses": 26,
+          "draws": 7
+        },
+        {
+          "rank": 50,
+          "x_handle": "eveflamingo",
+          "rating": 1108,
+          "wins": 24,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 51,
+          "x_handle": "leckan_m",
+          "rating": 1106,
+          "wins": 14,
+          "losses": 7,
+          "draws": 1
+        },
+        {
+          "rank": 52,
+          "x_handle": "default_vpc",
+          "rating": 1105,
+          "wins": 70,
+          "losses": 61,
+          "draws": 25
+        },
+        {
+          "rank": 53,
+          "x_handle": "stepberlin",
+          "rating": 1105,
+          "wins": 25,
+          "losses": 13,
+          "draws": 1
+        },
+        {
+          "rank": 54,
+          "x_handle": "williamcha1503",
+          "rating": 1105,
+          "wins": 16,
+          "losses": 9,
+          "draws": 3
+        },
+        {
+          "rank": 55,
+          "x_handle": "sothionx",
+          "rating": 1104,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 56,
+          "x_handle": "ludwingvzla",
+          "rating": 1101,
+          "wins": 10,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 57,
+          "x_handle": "sn_cryptos",
+          "rating": 1098,
+          "wins": 15,
+          "losses": 6,
+          "draws": 0
+        },
+        {
+          "rank": 58,
+          "x_handle": "dropoutsanta",
+          "rating": 1093,
+          "wins": 174,
+          "losses": 44,
+          "draws": 22
+        },
+        {
+          "rank": 59,
+          "x_handle": "tubbt3",
+          "rating": 1085,
+          "wins": 6,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 60,
+          "x_handle": "vibeleiz",
+          "rating": 1084,
+          "wins": 359,
+          "losses": 219,
+          "draws": 90
+        },
+        {
+          "rank": 61,
+          "x_handle": "riskadjustedme",
+          "rating": 1082,
+          "wins": 11,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 62,
+          "x_handle": "silent_tom5",
+          "rating": 1079,
+          "wins": 10,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 63,
+          "x_handle": "brian_carrozza",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 64,
+          "x_handle": "kung_jook",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 65,
+          "x_handle": "lutsen07",
+          "rating": 1077,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 66,
+          "x_handle": "rdmsgl",
+          "rating": 1077,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 67,
+          "x_handle": "cadeconkle",
+          "rating": 1072,
+          "wins": 7,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 68,
+          "x_handle": "halcrone",
+          "rating": 1072,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 69,
+          "x_handle": "michettiqne",
+          "rating": 1072,
+          "wins": 15,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 70,
+          "x_handle": "sc_world_2010",
+          "rating": 1072,
+          "wins": 9,
+          "losses": 4,
+          "draws": 3
+        },
+        {
+          "rank": 71,
+          "x_handle": "proximate1050",
+          "rating": 1070,
+          "wins": 10,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 72,
+          "x_handle": "hoyin020385",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 73,
+          "x_handle": "in4profit",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 74,
+          "x_handle": "ykcxx00",
+          "rating": 1067,
+          "wins": 9,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 75,
+          "x_handle": "edtropic",
+          "rating": 1066,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 76,
+          "x_handle": "smartbean",
+          "rating": 1066,
+          "wins": 6,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 77,
+          "x_handle": "mhk7272",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 1,
+          "draws": 2
+        },
+        {
+          "rank": 78,
+          "x_handle": "najishk_",
+          "rating": 1065,
+          "wins": 14,
+          "losses": 8,
+          "draws": 4
+        },
+        {
+          "rank": 79,
+          "x_handle": "rhynier",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 80,
+          "x_handle": "sergiocastillop",
+          "rating": 1064,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 81,
+          "x_handle": "todaysdw",
+          "rating": 1064,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 82,
+          "x_handle": "robmayofficial",
+          "rating": 1063,
+          "wins": 5,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 83,
+          "x_handle": "colindavaz",
+          "rating": 1062,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 84,
+          "x_handle": "sm_id123",
+          "rating": 1062,
+          "wins": 7,
+          "losses": 3,
+          "draws": 0
+        },
+        {
+          "rank": 85,
+          "x_handle": "oddlymaking",
+          "rating": 1061,
+          "wins": 18,
+          "losses": 14,
+          "draws": 4
+        },
+        {
+          "rank": 86,
+          "x_handle": "gravitatecre",
+          "rating": 1060,
+          "wins": 411,
+          "losses": 270,
+          "draws": 93
+        },
+        {
+          "rank": 87,
+          "x_handle": "iond535",
+          "rating": 1060,
+          "wins": 4,
+          "losses": 0,
+          "draws": 1
+        },
+        {
+          "rank": 88,
+          "x_handle": "itsryanlenk",
+          "rating": 1060,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 89,
+          "x_handle": "shonosukematoba",
+          "rating": 1058,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 90,
+          "x_handle": "misma2025",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 91,
+          "x_handle": "ryansheng",
+          "rating": 1056,
+          "wins": 9,
+          "losses": 5,
+          "draws": 4
+        },
+        {
+          "rank": 92,
+          "x_handle": "s3xyfuture",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 93,
+          "x_handle": "shirai3des",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 94,
+          "x_handle": "umarrasydan",
+          "rating": 1056,
+          "wins": 18,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 95,
+          "x_handle": "aj121503",
+          "rating": 1054,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 96,
+          "x_handle": "luka_software",
+          "rating": 1054,
+          "wins": 5,
+          "losses": 1,
+          "draws": 2
+        },
+        {
+          "rank": 97,
+          "x_handle": "nissimvizman",
+          "rating": 1054,
+          "wins": 27,
+          "losses": 20,
+          "draws": 11
+        },
+        {
+          "rank": 98,
+          "x_handle": "stanislav90670",
+          "rating": 1054,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 99,
+          "x_handle": "vitsaminn",
+          "rating": 1054,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 100,
+          "x_handle": "jacobjohns0dy9",
+          "rating": 1051,
+          "wins": 11,
+          "losses": 7,
+          "draws": 0
+        }
+      ]
+    },
+    {
+      "captured_at": "2026-09-18T16:41:49.000Z",
+      "source": "local-hourly-watch:runs/20260918-0940/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 100,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "omlejmi",
+          "rating": 1500,
+          "wins": 202,
+          "losses": 24,
+          "draws": 11
+        },
+        {
+          "rank": 2,
+          "x_handle": "tetsuoai",
+          "rating": 1439,
+          "wins": 1576,
+          "losses": 421,
+          "draws": 197
+        },
+        {
+          "rank": 3,
+          "x_handle": "izzat316",
+          "rating": 1431,
+          "wins": 273,
+          "losses": 44,
+          "draws": 26
+        },
+        {
+          "rank": 4,
+          "x_handle": "ggleandro",
+          "rating": 1361,
+          "wins": 88,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 5,
+          "x_handle": "ryaske",
+          "rating": 1350,
+          "wins": 373,
+          "losses": 68,
+          "draws": 44
+        },
+        {
+          "rank": 6,
+          "x_handle": "jsduren",
+          "rating": 1343,
+          "wins": 71,
+          "losses": 10,
+          "draws": 9
+        },
+        {
+          "rank": 7,
+          "x_handle": "syaor4n",
+          "rating": 1307,
+          "wins": 219,
+          "losses": 29,
+          "draws": 17
+        },
+        {
+          "rank": 8,
+          "x_handle": "notabot",
+          "rating": 1303,
+          "wins": 172,
+          "losses": 65,
+          "draws": 24
+        },
+        {
+          "rank": 9,
+          "x_handle": "ternquest_com",
+          "rating": 1272,
+          "wins": 128,
+          "losses": 40,
+          "draws": 17
+        },
+        {
+          "rank": 10,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 11,
+          "x_handle": "myrdania",
+          "rating": 1264,
+          "wins": 60,
+          "losses": 13,
+          "draws": 4
+        },
+        {
+          "rank": 12,
+          "x_handle": "devtony",
+          "rating": 1262,
+          "wins": 278,
+          "losses": 309,
+          "draws": 33
+        },
+        {
+          "rank": 13,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 14,
+          "x_handle": "prshannon_",
+          "rating": 1246,
+          "wins": 44,
+          "losses": 10,
+          "draws": 2
+        },
+        {
+          "rank": 15,
+          "x_handle": "lucataco",
+          "rating": 1241,
+          "wins": 94,
+          "losses": 49,
+          "draws": 24
+        },
+        {
+          "rank": 16,
+          "x_handle": "ryanmcadams",
+          "rating": 1236,
+          "wins": 4729,
+          "losses": 1349,
+          "draws": 682
+        },
+        {
+          "rank": 17,
+          "x_handle": "breezeeoo",
+          "rating": 1235,
+          "wins": 89,
+          "losses": 29,
+          "draws": 12
+        },
+        {
+          "rank": 18,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 19,
+          "x_handle": "yujules44768",
+          "rating": 1222,
+          "wins": 31,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 20,
+          "x_handle": "knownasdaniel",
+          "rating": 1212,
+          "wins": 27,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 21,
+          "x_handle": "arminsolecki",
+          "rating": 1208,
+          "wins": 30,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 22,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 23,
+          "x_handle": "gabriel_x86",
+          "rating": 1204,
+          "wins": 209,
+          "losses": 108,
+          "draws": 31
+        },
+        {
+          "rank": 24,
+          "x_handle": "jeremymlucy",
+          "rating": 1196,
+          "wins": 33,
+          "losses": 13,
+          "draws": 6
+        },
+        {
+          "rank": 25,
+          "x_handle": "bipolarschizoma",
+          "rating": 1190,
+          "wins": 29,
+          "losses": 11,
+          "draws": 9
+        },
+        {
+          "rank": 26,
+          "x_handle": "jusrelax",
+          "rating": 1187,
+          "wins": 30,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 27,
+          "x_handle": "diamondhanddie",
+          "rating": 1186,
+          "wins": 35,
+          "losses": 13,
+          "draws": 5
+        },
+        {
+          "rank": 28,
+          "x_handle": "blacksheepjav",
+          "rating": 1171,
+          "wins": 28,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 29,
+          "x_handle": "toryteach",
+          "rating": 1169,
+          "wins": 44,
+          "losses": 19,
+          "draws": 5
+        },
+        {
+          "rank": 30,
+          "x_handle": "neo_of_nazareth",
+          "rating": 1167,
+          "wins": 20,
+          "losses": 4,
+          "draws": 1
+        },
+        {
+          "rank": 31,
+          "x_handle": "vanellixluck",
+          "rating": 1165,
+          "wins": 23,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 32,
+          "x_handle": "cmoyyds",
+          "rating": 1159,
+          "wins": 55,
+          "losses": 21,
+          "draws": 7
+        },
+        {
+          "rank": 33,
+          "x_handle": "wolfe_jam",
+          "rating": 1155,
+          "wins": 48,
+          "losses": 28,
+          "draws": 19
+        },
+        {
+          "rank": 34,
+          "x_handle": "starz_zps",
+          "rating": 1153,
+          "wins": 21,
+          "losses": 9,
+          "draws": 8
+        },
+        {
+          "rank": 35,
+          "x_handle": "dnl23",
+          "rating": 1149,
+          "wins": 35,
+          "losses": 12,
+          "draws": 2
+        },
+        {
+          "rank": 36,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 37,
+          "x_handle": "relaxjulio",
+          "rating": 1142,
+          "wins": 14,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 38,
+          "x_handle": "jennahalebooks",
+          "rating": 1140,
+          "wins": 18,
+          "losses": 6,
+          "draws": 5
+        },
+        {
+          "rank": 39,
+          "x_handle": "_tb_brewster",
+          "rating": 1138,
+          "wins": 16,
+          "losses": 5,
+          "draws": 3
+        },
+        {
+          "rank": 40,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 41,
+          "x_handle": "reeeehhh1",
+          "rating": 1135,
+          "wins": 13,
+          "losses": 2,
+          "draws": 4
+        },
+        {
+          "rank": 42,
+          "x_handle": "lg65847489",
+          "rating": 1133,
+          "wins": 10,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 43,
+          "x_handle": "itzjonas",
+          "rating": 1131,
+          "wins": 88,
+          "losses": 74,
+          "draws": 28
+        },
+        {
+          "rank": 44,
+          "x_handle": "kshv86",
+          "rating": 1124,
+          "wins": 22,
+          "losses": 10,
+          "draws": 1
+        },
+        {
+          "rank": 45,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 46,
+          "x_handle": "bigbojangles_",
+          "rating": 1119,
+          "wins": 14,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 47,
+          "x_handle": "puppythick16",
+          "rating": 1119,
+          "wins": 12,
+          "losses": 2,
+          "draws": 6
+        },
+        {
+          "rank": 48,
+          "x_handle": "forethoughttech",
+          "rating": 1118,
+          "wins": 25,
+          "losses": 12,
+          "draws": 1
+        },
+        {
+          "rank": 49,
+          "x_handle": "dropoutsanta",
+          "rating": 1117,
+          "wins": 178,
+          "losses": 45,
+          "draws": 23
+        },
+        {
+          "rank": 50,
+          "x_handle": "ethanamitchell",
+          "rating": 1116,
+          "wins": 17,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 51,
+          "x_handle": "michettiqne",
+          "rating": 1116,
+          "wins": 22,
+          "losses": 10,
+          "draws": 1
+        },
+        {
+          "rank": 52,
+          "x_handle": "the_ryyy",
+          "rating": 1110,
+          "wins": 38,
+          "losses": 13,
+          "draws": 11
+        },
+        {
+          "rank": 53,
+          "x_handle": "eveflamingo",
+          "rating": 1108,
+          "wins": 24,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 54,
+          "x_handle": "leckan_m",
+          "rating": 1106,
+          "wins": 14,
+          "losses": 7,
+          "draws": 1
+        },
+        {
+          "rank": 55,
+          "x_handle": "default_vpc",
+          "rating": 1105,
+          "wins": 70,
+          "losses": 61,
+          "draws": 25
+        },
+        {
+          "rank": 56,
+          "x_handle": "stepberlin",
+          "rating": 1105,
+          "wins": 25,
+          "losses": 13,
+          "draws": 1
+        },
+        {
+          "rank": 57,
+          "x_handle": "williamcha1503",
+          "rating": 1105,
+          "wins": 16,
+          "losses": 9,
+          "draws": 3
+        },
+        {
+          "rank": 58,
+          "x_handle": "lighttwrecker",
+          "rating": 1104,
+          "wins": 22,
+          "losses": 13,
+          "draws": 5
+        },
+        {
+          "rank": 59,
+          "x_handle": "sothionx",
+          "rating": 1104,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 60,
+          "x_handle": "ludwingvzla",
+          "rating": 1101,
+          "wins": 10,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 61,
+          "x_handle": "roostercogdick",
+          "rating": 1100,
+          "wins": 91,
+          "losses": 27,
+          "draws": 7
+        },
+        {
+          "rank": 62,
+          "x_handle": "oddlymaking",
+          "rating": 1098,
+          "wins": 22,
+          "losses": 15,
+          "draws": 5
+        },
+        {
+          "rank": 63,
+          "x_handle": "sn_cryptos",
+          "rating": 1098,
+          "wins": 15,
+          "losses": 6,
+          "draws": 0
+        },
+        {
+          "rank": 64,
+          "x_handle": "tubbt3",
+          "rating": 1085,
+          "wins": 6,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 65,
+          "x_handle": "riskadjustedme",
+          "rating": 1082,
+          "wins": 11,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 66,
+          "x_handle": "silent_tom5",
+          "rating": 1079,
+          "wins": 10,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 67,
+          "x_handle": "brian_carrozza",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 68,
+          "x_handle": "kung_jook",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 69,
+          "x_handle": "lutsen07",
+          "rating": 1077,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 70,
+          "x_handle": "rdmsgl",
+          "rating": 1077,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 71,
+          "x_handle": "cadeconkle",
+          "rating": 1072,
+          "wins": 7,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 72,
+          "x_handle": "halcrone",
+          "rating": 1072,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 73,
+          "x_handle": "sc_world_2010",
+          "rating": 1072,
+          "wins": 9,
+          "losses": 4,
+          "draws": 3
+        },
+        {
+          "rank": 74,
+          "x_handle": "proximate1050",
+          "rating": 1070,
+          "wins": 10,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 75,
+          "x_handle": "vibeleiz",
+          "rating": 1069,
+          "wins": 387,
+          "losses": 240,
+          "draws": 102
+        },
+        {
+          "rank": 76,
+          "x_handle": "hoyin020385",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 77,
+          "x_handle": "in4profit",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 78,
+          "x_handle": "ykcxx00",
+          "rating": 1067,
+          "wins": 9,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 79,
+          "x_handle": "edtropic",
+          "rating": 1066,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 80,
+          "x_handle": "smartbean",
+          "rating": 1066,
+          "wins": 6,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 81,
+          "x_handle": "mhk7272",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 1,
+          "draws": 2
+        },
+        {
+          "rank": 82,
+          "x_handle": "najishk_",
+          "rating": 1065,
+          "wins": 14,
+          "losses": 8,
+          "draws": 4
+        },
+        {
+          "rank": 83,
+          "x_handle": "rhynier",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 84,
+          "x_handle": "sergiocastillop",
+          "rating": 1064,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 85,
+          "x_handle": "todaysdw",
+          "rating": 1064,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 86,
+          "x_handle": "robmayofficial",
+          "rating": 1063,
+          "wins": 5,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 87,
+          "x_handle": "colindavaz",
+          "rating": 1062,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 88,
+          "x_handle": "sm_id123",
+          "rating": 1062,
+          "wins": 7,
+          "losses": 3,
+          "draws": 0
+        },
+        {
+          "rank": 89,
+          "x_handle": "iond535",
+          "rating": 1060,
+          "wins": 4,
+          "losses": 0,
+          "draws": 1
+        },
+        {
+          "rank": 90,
+          "x_handle": "itsryanlenk",
+          "rating": 1060,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 91,
+          "x_handle": "shonosukematoba",
+          "rating": 1058,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 92,
+          "x_handle": "kamstergamer",
+          "rating": 1057,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 93,
+          "x_handle": "misma2025",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 94,
+          "x_handle": "ryansheng",
+          "rating": 1056,
+          "wins": 9,
+          "losses": 5,
+          "draws": 4
+        },
+        {
+          "rank": 95,
+          "x_handle": "s3xyfuture",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 96,
+          "x_handle": "shirai3des",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 97,
+          "x_handle": "sodiumhyrdride",
+          "rating": 1056,
+          "wins": 308,
+          "losses": 248,
+          "draws": 93
+        },
+        {
+          "rank": 98,
+          "x_handle": "umarrasydan",
+          "rating": 1056,
+          "wins": 18,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 99,
+          "x_handle": "aj121503",
+          "rating": 1054,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 100,
+          "x_handle": "luka_software",
+          "rating": 1054,
+          "wins": 5,
+          "losses": 1,
+          "draws": 2
+        }
+      ]
+    },
+    {
+      "captured_at": "2026-09-18T17:34:02.000Z",
+      "source": "local-hourly-watch:runs/20260918-1033/leaderboard.json",
+      "source_note": null,
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 2,
+        "state": "active"
+      },
+      "count": 100,
+      "entries": [
+        {
+          "rank": 1,
+          "x_handle": "omlejmi",
+          "rating": 1500,
+          "wins": 202,
+          "losses": 24,
+          "draws": 11
+        },
+        {
+          "rank": 2,
+          "x_handle": "izzat316",
+          "rating": 1483,
+          "wins": 305,
+          "losses": 44,
+          "draws": 27
+        },
+        {
+          "rank": 3,
+          "x_handle": "ryaske",
+          "rating": 1451,
+          "wins": 434,
+          "losses": 69,
+          "draws": 48
+        },
+        {
+          "rank": 4,
+          "x_handle": "tetsuoai",
+          "rating": 1439,
+          "wins": 1576,
+          "losses": 421,
+          "draws": 197
+        },
+        {
+          "rank": 5,
+          "x_handle": "ggleandro",
+          "rating": 1365,
+          "wins": 89,
+          "losses": 10,
+          "draws": 5
+        },
+        {
+          "rank": 6,
+          "x_handle": "jsduren",
+          "rating": 1343,
+          "wins": 71,
+          "losses": 10,
+          "draws": 9
+        },
+        {
+          "rank": 7,
+          "x_handle": "knownasdaniel",
+          "rating": 1309,
+          "wins": 60,
+          "losses": 8,
+          "draws": 5
+        },
+        {
+          "rank": 8,
+          "x_handle": "syaor4n",
+          "rating": 1304,
+          "wins": 288,
+          "losses": 37,
+          "draws": 22
+        },
+        {
+          "rank": 9,
+          "x_handle": "notabot",
+          "rating": 1303,
+          "wins": 172,
+          "losses": 65,
+          "draws": 24
+        },
+        {
+          "rank": 10,
+          "x_handle": "jonathannelson",
+          "rating": 1268,
+          "wins": 19,
+          "losses": 0,
+          "draws": 2
+        },
+        {
+          "rank": 11,
+          "x_handle": "myrdania",
+          "rating": 1264,
+          "wins": 60,
+          "losses": 13,
+          "draws": 4
+        },
+        {
+          "rank": 12,
+          "x_handle": "arithemonke",
+          "rating": 1261,
+          "wins": 44,
+          "losses": 8,
+          "draws": 0
+        },
+        {
+          "rank": 13,
+          "x_handle": "prshannon_",
+          "rating": 1246,
+          "wins": 44,
+          "losses": 10,
+          "draws": 2
+        },
+        {
+          "rank": 14,
+          "x_handle": "ternquest_com",
+          "rating": 1245,
+          "wins": 130,
+          "losses": 41,
+          "draws": 18
+        },
+        {
+          "rank": 15,
+          "x_handle": "devtony",
+          "rating": 1242,
+          "wins": 279,
+          "losses": 310,
+          "draws": 33
+        },
+        {
+          "rank": 16,
+          "x_handle": "lucataco",
+          "rating": 1241,
+          "wins": 94,
+          "losses": 49,
+          "draws": 24
+        },
+        {
+          "rank": 17,
+          "x_handle": "jusrelax",
+          "rating": 1237,
+          "wins": 39,
+          "losses": 11,
+          "draws": 5
+        },
+        {
+          "rank": 18,
+          "x_handle": "gravitatecre",
+          "rating": 1230,
+          "wins": 476,
+          "losses": 289,
+          "draws": 101
+        },
+        {
+          "rank": 19,
+          "x_handle": "devarminas",
+          "rating": 1225,
+          "wins": 39,
+          "losses": 8,
+          "draws": 1
+        },
+        {
+          "rank": 20,
+          "x_handle": "bipolarschizoma",
+          "rating": 1223,
+          "wins": 42,
+          "losses": 13,
+          "draws": 9
+        },
+        {
+          "rank": 21,
+          "x_handle": "yujules44768",
+          "rating": 1222,
+          "wins": 31,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 22,
+          "x_handle": "vanellixluck",
+          "rating": 1216,
+          "wins": 29,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 23,
+          "x_handle": "arminsolecki",
+          "rating": 1215,
+          "wins": 31,
+          "losses": 8,
+          "draws": 3
+        },
+        {
+          "rank": 24,
+          "x_handle": "breezeeoo",
+          "rating": 1211,
+          "wins": 89,
+          "losses": 30,
+          "draws": 12
+        },
+        {
+          "rank": 25,
+          "x_handle": "vibeleiz",
+          "rating": 1210,
+          "wins": 435,
+          "losses": 249,
+          "draws": 105
+        },
+        {
+          "rank": 26,
+          "x_handle": "kanuma368",
+          "rating": 1206,
+          "wins": 50,
+          "losses": 23,
+          "draws": 6
+        },
+        {
+          "rank": 27,
+          "x_handle": "gabriel_x86",
+          "rating": 1204,
+          "wins": 209,
+          "losses": 108,
+          "draws": 31
+        },
+        {
+          "rank": 28,
+          "x_handle": "jeremymlucy",
+          "rating": 1196,
+          "wins": 33,
+          "losses": 13,
+          "draws": 6
+        },
+        {
+          "rank": 29,
+          "x_handle": "_tb_brewster",
+          "rating": 1185,
+          "wins": 21,
+          "losses": 5,
+          "draws": 3
+        },
+        {
+          "rank": 30,
+          "x_handle": "blacksheepjav",
+          "rating": 1171,
+          "wins": 28,
+          "losses": 6,
+          "draws": 2
+        },
+        {
+          "rank": 31,
+          "x_handle": "ryanmcadams",
+          "rating": 1170,
+          "wins": 5162,
+          "losses": 1429,
+          "draws": 729
+        },
+        {
+          "rank": 32,
+          "x_handle": "toryteach",
+          "rating": 1169,
+          "wins": 44,
+          "losses": 19,
+          "draws": 5
+        },
+        {
+          "rank": 33,
+          "x_handle": "jennahalebooks",
+          "rating": 1167,
+          "wins": 21,
+          "losses": 6,
+          "draws": 5
+        },
+        {
+          "rank": 34,
+          "x_handle": "neo_of_nazareth",
+          "rating": 1167,
+          "wins": 20,
+          "losses": 4,
+          "draws": 1
+        },
+        {
+          "rank": 35,
+          "x_handle": "cmoyyds",
+          "rating": 1159,
+          "wins": 55,
+          "losses": 21,
+          "draws": 7
+        },
+        {
+          "rank": 36,
+          "x_handle": "wolfe_jam",
+          "rating": 1155,
+          "wins": 48,
+          "losses": 28,
+          "draws": 19
+        },
+        {
+          "rank": 37,
+          "x_handle": "starz_zps",
+          "rating": 1153,
+          "wins": 21,
+          "losses": 9,
+          "draws": 8
+        },
+        {
+          "rank": 38,
+          "x_handle": "dnl23",
+          "rating": 1149,
+          "wins": 35,
+          "losses": 12,
+          "draws": 2
+        },
+        {
+          "rank": 39,
+          "x_handle": "fourseasonsgrn",
+          "rating": 1142,
+          "wins": 29,
+          "losses": 11,
+          "draws": 0
+        },
+        {
+          "rank": 40,
+          "x_handle": "relaxjulio",
+          "rating": 1142,
+          "wins": 14,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 41,
+          "x_handle": "1yearhackathon",
+          "rating": 1135,
+          "wins": 17,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 42,
+          "x_handle": "michettiqne",
+          "rating": 1135,
+          "wins": 27,
+          "losses": 11,
+          "draws": 2
+        },
+        {
+          "rank": 43,
+          "x_handle": "reeeehhh1",
+          "rating": 1135,
+          "wins": 13,
+          "losses": 2,
+          "draws": 4
+        },
+        {
+          "rank": 44,
+          "x_handle": "diamondhanddie",
+          "rating": 1133,
+          "wins": 35,
+          "losses": 15,
+          "draws": 6
+        },
+        {
+          "rank": 45,
+          "x_handle": "lg65847489",
+          "rating": 1133,
+          "wins": 10,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 46,
+          "x_handle": "itzjonas",
+          "rating": 1131,
+          "wins": 88,
+          "losses": 74,
+          "draws": 28
+        },
+        {
+          "rank": 47,
+          "x_handle": "kshv86",
+          "rating": 1124,
+          "wins": 22,
+          "losses": 10,
+          "draws": 1
+        },
+        {
+          "rank": 48,
+          "x_handle": "seano1022",
+          "rating": 1123,
+          "wins": 36,
+          "losses": 13,
+          "draws": 3
+        },
+        {
+          "rank": 49,
+          "x_handle": "bigbojangles_",
+          "rating": 1119,
+          "wins": 14,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 50,
+          "x_handle": "puppythick16",
+          "rating": 1119,
+          "wins": 12,
+          "losses": 2,
+          "draws": 6
+        },
+        {
+          "rank": 51,
+          "x_handle": "forethoughttech",
+          "rating": 1118,
+          "wins": 25,
+          "losses": 12,
+          "draws": 1
+        },
+        {
+          "rank": 52,
+          "x_handle": "ethanamitchell",
+          "rating": 1116,
+          "wins": 17,
+          "losses": 7,
+          "draws": 2
+        },
+        {
+          "rank": 53,
+          "x_handle": "the_ryyy",
+          "rating": 1110,
+          "wins": 38,
+          "losses": 13,
+          "draws": 11
+        },
+        {
+          "rank": 54,
+          "x_handle": "eveflamingo",
+          "rating": 1108,
+          "wins": 24,
+          "losses": 12,
+          "draws": 5
+        },
+        {
+          "rank": 55,
+          "x_handle": "leckan_m",
+          "rating": 1106,
+          "wins": 14,
+          "losses": 7,
+          "draws": 1
+        },
+        {
+          "rank": 56,
+          "x_handle": "default_vpc",
+          "rating": 1105,
+          "wins": 70,
+          "losses": 61,
+          "draws": 25
+        },
+        {
+          "rank": 57,
+          "x_handle": "stepberlin",
+          "rating": 1105,
+          "wins": 25,
+          "losses": 13,
+          "draws": 1
+        },
+        {
+          "rank": 58,
+          "x_handle": "williamcha1503",
+          "rating": 1105,
+          "wins": 16,
+          "losses": 9,
+          "draws": 3
+        },
+        {
+          "rank": 59,
+          "x_handle": "lighttwrecker",
+          "rating": 1104,
+          "wins": 22,
+          "losses": 13,
+          "draws": 5
+        },
+        {
+          "rank": 60,
+          "x_handle": "sothionx",
+          "rating": 1104,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 61,
+          "x_handle": "ludwingvzla",
+          "rating": 1101,
+          "wins": 10,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 62,
+          "x_handle": "tops_2026",
+          "rating": 1101,
+          "wins": 46,
+          "losses": 34,
+          "draws": 4
+        },
+        {
+          "rank": 63,
+          "x_handle": "roostercogdick",
+          "rating": 1100,
+          "wins": 91,
+          "losses": 27,
+          "draws": 7
+        },
+        {
+          "rank": 64,
+          "x_handle": "oddlymaking",
+          "rating": 1098,
+          "wins": 22,
+          "losses": 15,
+          "draws": 5
+        },
+        {
+          "rank": 65,
+          "x_handle": "sn_cryptos",
+          "rating": 1098,
+          "wins": 15,
+          "losses": 6,
+          "draws": 0
+        },
+        {
+          "rank": 66,
+          "x_handle": "jonathanse87800",
+          "rating": 1094,
+          "wins": 12,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 67,
+          "x_handle": "sodiumhyrdride",
+          "rating": 1089,
+          "wins": 391,
+          "losses": 279,
+          "draws": 104
+        },
+        {
+          "rank": 68,
+          "x_handle": "tubbt3",
+          "rating": 1085,
+          "wins": 6,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 69,
+          "x_handle": "dropoutsanta",
+          "rating": 1083,
+          "wins": 179,
+          "losses": 47,
+          "draws": 23
+        },
+        {
+          "rank": 70,
+          "x_handle": "riskadjustedme",
+          "rating": 1082,
+          "wins": 11,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 71,
+          "x_handle": "silent_tom5",
+          "rating": 1079,
+          "wins": 10,
+          "losses": 5,
+          "draws": 1
+        },
+        {
+          "rank": 72,
+          "x_handle": "brian_carrozza",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 73,
+          "x_handle": "kung_jook",
+          "rating": 1078,
+          "wins": 6,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 74,
+          "x_handle": "lutsen07",
+          "rating": 1077,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 75,
+          "x_handle": "rdmsgl",
+          "rating": 1077,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 76,
+          "x_handle": "cadeconkle",
+          "rating": 1072,
+          "wins": 7,
+          "losses": 2,
+          "draws": 2
+        },
+        {
+          "rank": 77,
+          "x_handle": "halcrone",
+          "rating": 1072,
+          "wins": 8,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 78,
+          "x_handle": "sc_world_2010",
+          "rating": 1072,
+          "wins": 9,
+          "losses": 4,
+          "draws": 3
+        },
+        {
+          "rank": 79,
+          "x_handle": "proximate1050",
+          "rating": 1070,
+          "wins": 10,
+          "losses": 5,
+          "draws": 2
+        },
+        {
+          "rank": 80,
+          "x_handle": "hoyin020385",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 81,
+          "x_handle": "in4profit",
+          "rating": 1068,
+          "wins": 7,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 82,
+          "x_handle": "ykcxx00",
+          "rating": 1067,
+          "wins": 9,
+          "losses": 4,
+          "draws": 0
+        },
+        {
+          "rank": 83,
+          "x_handle": "edtropic",
+          "rating": 1066,
+          "wins": 7,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 84,
+          "x_handle": "smartbean",
+          "rating": 1066,
+          "wins": 6,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 85,
+          "x_handle": "mhk7272",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 1,
+          "draws": 2
+        },
+        {
+          "rank": 86,
+          "x_handle": "najishk_",
+          "rating": 1065,
+          "wins": 14,
+          "losses": 8,
+          "draws": 4
+        },
+        {
+          "rank": 87,
+          "x_handle": "rhynier",
+          "rating": 1065,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 88,
+          "x_handle": "todaysdw",
+          "rating": 1064,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 89,
+          "x_handle": "robmayofficial",
+          "rating": 1063,
+          "wins": 5,
+          "losses": 1,
+          "draws": 1
+        },
+        {
+          "rank": 90,
+          "x_handle": "colindavaz",
+          "rating": 1062,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0
+        },
+        {
+          "rank": 91,
+          "x_handle": "sm_id123",
+          "rating": 1062,
+          "wins": 7,
+          "losses": 3,
+          "draws": 0
+        },
+        {
+          "rank": 92,
+          "x_handle": "sergiocastillop",
+          "rating": 1061,
+          "wins": 8,
+          "losses": 3,
+          "draws": 0
+        },
+        {
+          "rank": 93,
+          "x_handle": "iond535",
+          "rating": 1060,
+          "wins": 4,
+          "losses": 0,
+          "draws": 1
+        },
+        {
+          "rank": 94,
+          "x_handle": "itsryanlenk",
+          "rating": 1060,
+          "wins": 14,
+          "losses": 7,
+          "draws": 3
+        },
+        {
+          "rank": 95,
+          "x_handle": "shonosukematoba",
+          "rating": 1058,
+          "wins": 5,
+          "losses": 1,
+          "draws": 0
+        },
+        {
+          "rank": 96,
+          "x_handle": "kamstergamer",
+          "rating": 1057,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 97,
+          "x_handle": "misma2025",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        },
+        {
+          "rank": 98,
+          "x_handle": "ryansheng",
+          "rating": 1056,
+          "wins": 9,
+          "losses": 5,
+          "draws": 4
+        },
+        {
+          "rank": 99,
+          "x_handle": "s3xyfuture",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0
+        },
+        {
+          "rank": 100,
+          "x_handle": "shirai3des",
+          "rating": 1056,
+          "wins": 6,
+          "losses": 2,
+          "draws": 1
+        }
+      ]
+    }
+  ]
+}

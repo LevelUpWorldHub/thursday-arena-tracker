@@ -1,0 +1,23 @@
+{
+  "name": "thursday-arena-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prebuild": "node scripts/build-data.mjs",
+    "build": "tsc --noEmit && vite build",
+    "predev": "node scripts/build-data.mjs",
+    "dev": "vite",
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "snapshot": "node scripts/snapshot.mjs",
+    "test": "node scripts/import-seed.mjs && node scripts/build-data.mjs && node --experimental-strip-types --test src/metrics.test.ts scripts/lib.test.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vite": "^6.3.6"
+  }
+}
