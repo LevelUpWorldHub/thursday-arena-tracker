@@ -13,21 +13,39 @@ describe("lineups section", () => {
     const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
     const section = html.slice(html.indexOf('id="lineups"'), html.indexOf('id="meta-report"'));
     const present = [
-      "2,611 Season 4 matches involving top-20 players",
+      "2,611 rated Season 4 matches involving top-20 players",
+      "about 9,165 rated matches",
       "Sep 23 12:05 AM – Sep 24 2:36 PM PT",
-      "2,663 different boards across 4,800 lineups",
-      "most-used bot (Vigil) is in only 6.5%",
-      "99.8% of lineups",
-      "no active crew bonus won just 15.7% (108 lineups)",
-      "61.3% overall, 62.2%",
+      "4,800 top-20 lineup-games",
+      "2,663 different boards across 4,800 lineup-games",
+      "Vigil, is in 6.5% of those 4,800",
+      "99.8% of 4,800 lineup-games",
+      "15.7% (n=108)",
+      "51.8% (n=4,258)",
+      "36.0% without Fusion (n=542)",
+      "Fusion only exists on Season 4 boards",
+      "61.3% (n=481)",
+      "62.2% (n=296)",
+      "63.5% (n=159)",
+      "71.2% (n=139)",
+      "57.1% (n=156)",
+      "55.3% (n=150)",
+      "56.9% (n=137)",
+      "Credit Card Max is not a winner: 46.6% (n=249)",
+      "44.0% (n=100)",
+      "65.9% (n=472)",
+      "55.6% (n=223)",
+      "61.2% (n=224)",
+      "61.4% (n=140)",
+      "17 of 5,222 Season 4 sides",
       "4-11-2",
       "12 of 17 board-rounds",
-      "52.7% of matches (1,376 of 2,611)",
+      "52.7% of these matches (1,376 of 2,611)",
     ];
     for (const text of present) {
       assert.equal(section.includes(text), true, `missing ${text}`);
     }
-    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%"];
+    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%", "55%+", "61–62%"];
     for (const text of absent) {
       assert.equal(section.includes(text), false, `stale mixed-season figure ${text}`);
     }
