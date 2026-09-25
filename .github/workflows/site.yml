@@ -1,4 +1,4 @@
-# Touched 2026-09-25 so GitHub re-reads this cron from the default branch.
+# Touched 2026-09-25 04:45 UTC so GitHub re-reads this cron from main. The in-repo cron is the backup; workflow_dispatch stays available.
 name: Snapshot and publish
 
 on:

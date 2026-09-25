@@ -15,7 +15,7 @@ Times on the page are Pacific Time. Stored timestamps are UTC.
 - Rating history for one player. Lines break at season boundaries. An official final is drawn at that season's end, or at the next season's start, rather than at the hour it was downloaded. Labels use the season number, because older snapshots used a name that does not match the number.
 - Catalog counts by rarity (and average cost, attack, and health) from the latest daily catalog snapshot.
 - A weekly meta report signup. It is a mailto link to thursdayarena@agentmail.to. There is no form backend and no new dependency.
-- Season 4 winning lineups, a static snapshot of 2,611 rated Season 4 matches involving top-20 players (not every Season 4 match; the full season has about 9,165 rated matches), Sep 23 12:05 AM – Sep 24 2:36 PM PT, 4,800 top-20 lineup-games. Not live data. Every rate on the page includes its sample size.
+- Season 4 winning lineups, a static snapshot of 2,611 rated Season 4 matches involving top-20 players (not every Season 4 match; about 9,165 rated Season 4 matches as of Sep 24, 6:45 PM PT), Sep 23 12:05 AM – Sep 24 2:36 PM PT, 4,800 top-20 lineup-games. Not live data. Every rate on the page includes its sample size.
 - Freshness in PT, plus a stale badge when the last successful check is more than 3 hours old. After a season's stored end time, the header says that season ended and the next snapshot has not arrived.
 
 ## Data flow

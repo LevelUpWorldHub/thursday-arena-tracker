@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it } from "node:test";
 import {
   appearances,
@@ -24,6 +26,9 @@ import {
   seasonLabel,
   seriesFor,
   showEmptyLiveBoard,
+  showUnverifiedNote,
+  playersShownNote,
+  topShownNote,
   sinceStartLabel,
   versusPreviousSeason,
   weekMoverPlan,
@@ -406,6 +411,35 @@ describe("frequency", () => {
       { handle: "c", appearances: 2 },
     ];
     assert.equal(withTiedCutoff(rows, 2).length, 3);
+  });
+
+  it("hides the unverified note while a live board is showing and names a truncated list from the counts", () => {
+    assert.equal(showUnverifiedNote(false, 2), false);
+    assert.equal(showUnverifiedNote(true, 0), false);
+    assert.equal(showUnverifiedNote(true, 1), true);
+    assert.equal(playersShownNote(25, 36), "25 of 36 players shown");
+    assert.equal(playersShownNote(36, 36), null);
+    assert.equal(topShownNote(8, 8), null);
+    assert.equal(topShownNote(8, 12), "top 8 shown");
+  });
+
+  it("computes the Season 4 appearance cutoff from the committed snapshots", () => {
+    const dir = path.resolve("data/seasons/4/snapshots");
+    const snaps: Snap[] = [];
+    for (const name of readdirSync(dir).filter((file) => file.endsWith(".json")).sort()) {
+      const doc = JSON.parse(readFileSync(path.join(dir, name), "utf8")) as {
+        snapshots?: (Omit<Snap, "season"> & { season?: number | { number?: number } })[];
+      };
+      for (const raw of doc.snapshots || []) {
+        const season = typeof raw.season === "number" ? raw.season : raw.season?.number ?? 4;
+        snaps.push({ ...raw, season });
+      }
+    }
+    const table = appearances(snaps);
+    const shown = withTiedCutoff(table.rows, 20);
+    assert.equal(table.rows.length, 36);
+    assert.equal(shown.length, 25);
+    assert.equal(playersShownNote(shown.length, table.rows.length), "25 of 36 players shown");
   });
 });
 

@@ -136,6 +136,7 @@ export async function buildSiteData(options = {}) {
 
   const publicIndex = {
     last_checked: preferNewerCheck(index?.last_checked || null, cached),
+    ...(index?.fetch_failed === true ? { fetch_failed: true } : {}),
     current: index?.current
       ? {
           number: index.current.number,

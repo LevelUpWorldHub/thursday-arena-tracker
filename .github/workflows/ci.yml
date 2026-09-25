@@ -2,6 +2,11 @@ name: CI
 
 on:
   pull_request:
+  push:
+    branches: [main]
+    # Snapshot commits only touch data/. Ignoring that path keeps the Actions bot from re-running CI, which would not push again but would queue a needless check on every ladder write.
+    paths-ignore:
+      - "data/**"
 
 permissions:
   contents: read

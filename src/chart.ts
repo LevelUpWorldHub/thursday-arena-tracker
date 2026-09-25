@@ -38,7 +38,7 @@ export function mountChart(host: HTMLElement, segments: { season: number; points
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.setAttribute("role", "img");
+  svg.setAttribute("role", "group");
   const first = points[0];
   const last = points[points.length - 1];
   svg.setAttribute(
@@ -80,7 +80,10 @@ export function mountChart(host: HTMLElement, segments: { season: number; points
       dot.setAttribute("r", "4");
       dot.setAttribute("fill", color);
       const mark = point.mark === "unverified" ? " · unverified" : point.mark === "final" ? " · official final" : "";
-      dot.dataset.tip = `${seasonLabel(segment.season)} · ${formatPt(point.t)} · rating ${point.rating} · rank ${point.rank}${mark}`;
+      const tipText = `${seasonLabel(segment.season)} · ${formatPt(point.t)} · rating ${point.rating} · rank ${point.rank}${mark}`;
+      dot.dataset.tip = tipText;
+      dot.setAttribute("role", "img");
+      dot.setAttribute("aria-label", tipText);
       if (point.mark === "unverified") dot.setAttribute("stroke", "#c4554a");
       if (point.mark === "final") dot.setAttribute("stroke", "#f0c14a");
       svg.append(dot);
@@ -99,7 +102,16 @@ export function mountChart(host: HTMLElement, segments: { season: number; points
 
   const tip = document.createElement("p");
   tip.className = "chart-tip";
+  tip.setAttribute("aria-live", "polite");
   tip.textContent = "Hover or focus a point.";
+
+  const pointList = document.createElement("ul");
+  pointList.className = "sr-only";
+  for (const circle of svg.querySelectorAll("circle")) {
+    const item = document.createElement("li");
+    item.textContent = circle.getAttribute("aria-label") || "";
+    pointList.append(item);
+  }
 
   const show = (text: string) => {
     tip.textContent = text;
@@ -120,5 +132,5 @@ export function mountChart(host: HTMLElement, segments: { season: number; points
   axis.className = "axis";
   axis.textContent = `${formatPt(first.t)} to ${formatPt(last.t)}`;
 
-  host.append(svg, tip, axis);
+  host.append(svg, pointList, tip, axis);
 }

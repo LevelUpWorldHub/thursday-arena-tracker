@@ -415,6 +415,23 @@ export function withTiedCutoff(rows: Appearance[], limit: number): Appearance[] 
   return rows.slice(0, end);
 }
 
+/** The unverified-snapshot note belongs on the stored board, not under a live top 20. */
+export function showUnverifiedNote(showingStoredBoard: boolean, unverifiedCount: number): boolean {
+  return showingStoredBoard && unverifiedCount > 0;
+}
+
+/** "25 of 36 players shown" when a ranked list is cut. Null when every row is on the page. */
+export function playersShownNote(shown: number, total: number): string | null {
+  if (total <= 0 || shown >= total) return null;
+  return `${shown} of ${total} players shown`;
+}
+
+/** "top 8 shown" when a list is sliced to a fixed limit. */
+export function topShownNote(limit: number, total: number): string | null {
+  if (total <= limit) return null;
+  return `top ${limit} shown`;
+}
+
 export type SeasonAppearances = {
   seasons: { number: number; days: number }[];
   rows: { handle: string; total: number; bySeason: { season: number; appearances: number }[] }[];

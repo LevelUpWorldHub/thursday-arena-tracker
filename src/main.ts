@@ -25,7 +25,10 @@ import {
   chartInstant,
   seriesFor,
   showEmptyLiveBoard,
+  showUnverifiedNote,
   sinceStartLabel,
+  playersShownNote,
+  topShownNote,
   isStale,
   weekMoverPlan,
   withTiedCutoff,
@@ -63,6 +66,7 @@ type SeasonClock = {
 type SiteData = {
   index: {
     last_checked: string | null;
+    fetch_failed?: boolean;
     current: SeasonClock | null;
     next: SeasonClock | null;
     seasons: { number: number; starts_at: string | null; ends_at: string | null; state: string; has_final: boolean }[];
@@ -185,7 +189,7 @@ function person(handle: string, avatar: string | null | undefined, onPick: (hand
     box.append(initialsNode);
   }
   const who = el("div", "who");
-  const pick = el("button", "linkish", `@${handle}`);
+  const pick = el("button", "linkish", handle);
   pick.type = "button";
   pick.setAttribute("aria-pressed", String(handle === selected));
   pick.addEventListener("click", () => onPick(handle));
@@ -267,14 +271,14 @@ function deltaLists(deltas: Delta[]): HTMLElement {
     ["Fallers", fallers(deltas)],
   ] as const) {
     const card = el("div");
-    card.append(el("h3", "", title));
+    card.append(el("h4", "", title));
     if (!rows.length) {
       card.append(el("p", "note", "None in this pair."));
     } else {
       const list = el("ul", "clean");
       for (const row of rows) {
         const item = el("li");
-        item.append(el("strong", "", `@${row.handle}`), document.createTextNode(` ${row.rating} `));
+        item.append(el("strong", "", row.handle), document.createTextNode(` ${row.rating} `));
         item.append(signed(row.ratingDelta, "rating"), document.createTextNode(` · rank ${row.rankThen} → ${row.rank} `));
         item.append(signed(row.rankDelta, "ranks"));
         list.append(item);
@@ -317,8 +321,16 @@ function paintChart(): void {
     tableHost.replaceChildren();
     if (points.length) {
       const table = el("table");
-      const caption = el("caption", "", `Stored ratings for @${selected}`);
+      const caption = el("caption", "", `Stored ratings for ${selected}`);
       table.append(caption);
+      const head = el("thead");
+      const header = el("tr");
+      for (const label of ["Season", "Time", "Rating", "Rank"]) {
+        const cell = el("th", label === "Rating" || label === "Rank" ? "num" : "", label);
+        cell.scope = "col";
+        header.append(cell);
+      }
+      head.append(header);
       const body = el("tbody");
       for (const point of points) {
         const tr = el("tr");
@@ -334,7 +346,7 @@ function paintChart(): void {
         );
         body.append(tr);
       }
-      table.append(body);
+      table.append(head, body);
       const details = el("details");
       details.append(el("summary", "", "Rating values"), table);
       tableHost.append(details);
@@ -395,6 +407,9 @@ function render(): void {
   if (site.index.last_checked) {
     freshness.append(document.createTextNode(` · Last check: ${formatPt(site.index.last_checked)}`));
   }
+  if (site.index.fetch_failed) {
+    freshness.append(document.createTextNode(" · showing stored data"));
+  }
   if (isStale(site.index.last_checked, latest?.captured_at ?? null, now)) {
     freshness.append(el("span", "badge stale", "Stale snapshot"));
   }
@@ -422,7 +437,7 @@ function render(): void {
     scroll.append(ladderTable(ladder.rows, caption));
     ladderRoot.append(scroll);
   }
-  if (unverified.length) {
+  if (showUnverifiedNote(!useLive && ladder.kind !== "empty", unverified.length)) {
     ladderRoot.append(
       el(
         "p",
@@ -486,13 +501,13 @@ function render(): void {
       ["Fallers", downs],
     ] as const) {
       const card = el("div");
-      card.append(el("h3", "", title));
+      card.append(el("h4", "", title));
       if (!rows.length) card.append(el("p", "note", "None."));
       else {
         const list = el("ul", "clean");
         for (const row of rows.slice(0, 5)) {
           const item = el("li");
-          item.append(el("strong", "", `@${row.handle}`), document.createTextNode(` rank ${row.rank} `), signed(row.delta, "from 1000"));
+          item.append(el("strong", "", row.handle), document.createTextNode(` rank ${row.rank} `), signed(row.delta, "from 1000"));
           list.append(item);
         }
         card.append(list);
@@ -524,11 +539,14 @@ function render(): void {
     if (finishSeason != null && finishRows.length) {
       weekCard.append(el("h3", "", `Current rating vs ${seasonLabel(finishSeason)} finish (not a mover)`));
       weekCard.append(el("p", "note", "Players with no games this season are hidden. This is not a 24-hour or 7-day mover."));
+      const finishLimit = 8;
+      const finishNote = topShownNote(finishLimit, finishRows.length);
+      if (finishNote) weekCard.append(el("p", "note", finishNote));
       const list = el("ul", "clean");
-      for (const row of finishRows.slice(0, 8)) {
+      for (const row of finishRows.slice(0, finishLimit)) {
         const item = el("li");
         item.append(
-          el("strong", "", `@${row.handle}`),
+          el("strong", "", row.handle),
           document.createTextNode(` ${seasonLabel(row.previousSeason)} ${row.previousRating} → ${row.rating} `),
           signed(row.ratingDelta, "rating"),
         );
@@ -572,7 +590,7 @@ function render(): void {
       if (!result.value.entered.length) entered.append(el("p", "note", "None."));
       else {
         const list = el("ul", "clean");
-        for (const row of result.value.entered) list.append(el("li", "", `@${row.x_handle} at rank ${row.rank}`));
+        for (const row of result.value.entered) list.append(el("li", "", `${row.x_handle} at rank ${row.rank}`));
         entered.append(list);
       }
       const exited = el("div");
@@ -582,12 +600,15 @@ function render(): void {
         const list = el("ul", "clean");
         for (const row of result.value.exited) {
           const nowRank = row.rankNow == null ? "not in this snapshot" : `now rank ${row.rankNow}`;
-          list.append(el("li", "", `@${row.handle} was rank ${row.rankThen}, ${nowRank}`));
+          list.append(el("li", "", `${row.handle} was rank ${row.rankThen}, ${nowRank}`));
         }
         exited.append(list);
       }
       grid.append(entered, exited);
       card.append(grid);
+      card.append(
+        el("p", "note", "A renamed handle with no stable player id appears as one exit plus one new entrant."),
+      );
     }
   }
   rosterRoot.append(card);
@@ -619,14 +640,18 @@ function render(): void {
       `${focus.days} UTC day${focus.days === 1 ? "" : "s"} in ${seasonLabel(focusNumber)}. A player counts once per day they were in the top 20.`,
     ),
   );
+  const focusShown = withTiedCutoff(focus.rows, 20);
   const focusScroll = el("div", "table-scroll");
-  focusScroll.append(appearanceTable(withTiedCutoff(focus.rows, 20), `${focus.days}`));
+  focusScroll.append(appearanceTable(focusShown, `${focus.days}`, `Top-20 appearances in ${seasonLabel(focusNumber)}`));
   frequencyRoot.append(focusScroll);
+  const focusNote = playersShownNote(focusShown.length, focus.rows.length);
+  if (focusNote) frequencyRoot.append(el("p", "note", focusNote));
 
   const across = appearancesAcross(seasons.map((season) => ({ season: season.number, snaps: toSnaps(season) })));
   frequencyRoot.append(el("h3", "", "All stored seasons"));
   frequencyRoot.append(el("p", "note", "The total is the sum of the per-season counts. Seasons are not mixed into one silent number."));
   const wide = el("table");
+  wide.append(el("caption", "", "Appearances across stored seasons"));
   const head = el("tr");
   head.append(el("th", "", "Player"));
   for (const season of across.seasons) {
@@ -646,7 +671,7 @@ function render(): void {
   const body = el("tbody");
   for (const row of shown) {
     const tr = el("tr");
-    tr.append(el("td", "", `@${row.handle}`));
+    tr.append(el("td", "", row.handle));
     for (const item of row.bySeason) tr.append(el("td", "num", String(item.appearances)));
     tr.append(el("td", "num", String(row.total)));
     body.append(tr);
@@ -655,6 +680,8 @@ function render(): void {
   const wideScroll = el("div", "table-scroll");
   wideScroll.append(wide);
   frequencyRoot.append(wideScroll);
+  const acrossNote = playersShownNote(shown.length, rankedRows.length);
+  if (acrossNote) frequencyRoot.append(el("p", "note", acrossNote));
 
   historyRoot.replaceChildren();
   const historyTitle = el("h2", "", "Rating history");
@@ -721,6 +748,7 @@ function render(): void {
   const tagged = site.catalog.season_tags.find((tag) => tag.season === current);
   if (tagged) catalogRoot.append(el("p", "", `${tagged.count} bots are tagged with ${seasonLabel(current)}.`));
   const table = el("table");
+  table.append(el("caption", "", "Catalog counts by rarity"));
   const header = el("tr");
   for (const label of ["Rarity", "Count", "Avg cost", "Avg attack", "Avg health"]) {
     header.append(el("th", label === "Rarity" ? "" : "num", label));
@@ -749,8 +777,13 @@ function render(): void {
   }
 }
 
-function appearanceTable(rows: { handle: string; appearances: number }[], denominator: string): HTMLTableElement {
+function appearanceTable(
+  rows: { handle: string; appearances: number }[],
+  denominator: string,
+  caption: string,
+): HTMLTableElement {
   const table = el("table");
+  table.append(el("caption", "", caption));
   const header = el("tr");
   header.append(el("th", "", "Player"), el("th", "num", `Days of ${denominator}`));
   const head = el("thead");
@@ -758,7 +791,7 @@ function appearanceTable(rows: { handle: string; appearances: number }[], denomi
   const body = el("tbody");
   for (const row of rows) {
     const tr = el("tr");
-    tr.append(el("td", "", `@${row.handle}`), el("td", "num", `${row.appearances} of ${denominator}`));
+    tr.append(el("td", "", row.handle), el("td", "num", `${row.appearances} of ${denominator}`));
     body.append(tr);
   }
   table.append(head, body);
