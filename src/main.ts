@@ -8,6 +8,7 @@ import {
   classifyLadder,
   climbers,
   dayMoverPlan,
+  FREQUENCY_MIN_DAYS,
   defaultChartSeason,
   endedWaitingText,
   fallers,
@@ -17,6 +18,7 @@ import {
   moversSinceStart,
   officialPrevious,
   rosterChanges,
+  rosterWindow,
   seasonAgeHours,
   seasonEnded,
   seasonLabel,
@@ -529,36 +531,27 @@ function render(): void {
   const rosterTitle = el("h2", "", "Top 20 entrants and exits");
   rosterTitle.id = "roster-title";
   rosterRoot.append(rosterTitle);
-  const blocks: { title: string; from: Snap | null; to: Snap | null; first: boolean }[] = [];
-  const previousSnap = countedCurrent.length >= 2 ? countedCurrent[countedCurrent.length - 2] : null;
-  const countedLatest = countedCurrent[countedCurrent.length - 1] ?? null;
-  blocks.push({
-    title: "Vs previous snapshot",
-    from: previousSnap,
-    to: countedLatest,
-    first: countedCurrent.length < 2,
-  });
-  if (day.kind === "snapshots") {
-    blocks.push({ title: "Vs the 24 hour snapshot", from: day.from, to: day.to, first: false });
-  }
-  for (const block of blocks) {
-    const card = el("div", "panel");
-    card.append(el("h3", "", block.title));
-    const result = rosterChanges(block.from, block.to, block.first);
-    if (!result.ok && result.reason === "new-season") {
-      card.append(el("p", "", "New season — everyone is new."));
-    } else if (!result.ok && result.reason === "row-counts-differ" && block.from && block.to) {
+  const roster = rosterWindow(storedCurrent, clock?.starts_at ?? null, now);
+  const card = el("div", "panel");
+  card.append(el("h3", "", roster.title));
+  if (roster.kind === "since-start" && !roster.from) {
+    card.append(el("p", "", "Since season start — everyone is new."));
+  } else if (roster.kind === "not-computed") {
+    card.append(el("p", "", roster.message));
+  } else if (roster.from && roster.to) {
+    const result = rosterChanges(roster.from, roster.to, false);
+    card.append(el("p", "", `From ${formatPt(roster.from.captured_at)} to ${formatPt(roster.to.captured_at)}.`));
+    if (!result.ok && result.reason === "row-counts-differ") {
       card.append(
         el(
           "p",
           "",
-          `Not compared (${block.from.count} rows vs ${block.to.count} rows). A name missing from a shorter snapshot is not an exit from the ladder.`,
+          `Not compared (${roster.from.count} rows vs ${roster.to.count} rows). A name missing from a shorter snapshot is not an exit from the ladder.`,
         ),
       );
     } else if (!result.ok) {
       card.append(el("p", "", "Not computed."));
-    } else if (block.from && block.to) {
-      card.append(el("p", "", `From ${formatPt(block.from.captured_at)} to ${formatPt(block.to.captured_at)}.`));
+    } else {
       const grid = el("div", "split-2");
       const entered = el("div");
       entered.append(el("h3", "", "Entered the top 20"));
@@ -574,23 +567,25 @@ function render(): void {
       else {
         const list = el("ul", "clean");
         for (const row of result.value.exited) {
-          const now = row.rankNow == null ? "not in this snapshot" : `now rank ${row.rankNow}`;
-          list.append(el("li", "", `@${row.handle} was rank ${row.rankThen}, ${now}`));
+          const nowRank = row.rankNow == null ? "not in this snapshot" : `now rank ${row.rankNow}`;
+          list.append(el("li", "", `@${row.handle} was rank ${row.rankThen}, ${nowRank}`));
         }
         exited.append(list);
       }
       grid.append(entered, exited);
       card.append(grid);
     }
-    rosterRoot.append(card);
   }
+  rosterRoot.append(card);
 
   frequencyRoot.replaceChildren();
   const frequencyTitle = el("h2", "", "Top-20 appearances");
   frequencyTitle.id = "frequency-title";
   frequencyRoot.append(frequencyTitle);
   const countedPrevious = movementSnaps(previousSnaps);
-  const choice = frequencySeason(countedCurrent.length, countedPrevious.length);
+  const currentDays = appearances(countedCurrent).days;
+  const previousDays = appearances(countedPrevious).days;
+  const choice = frequencySeason(currentDays, previousDays);
   const focusSnaps = choice === "previous" ? countedPrevious : countedCurrent;
   const focusNumber = choice === "previous" && previousNumber ? previousNumber : current;
   if (choice === "previous") {
@@ -598,14 +593,20 @@ function render(): void {
       el(
         "p",
         "note",
-        `${seasonLabel(current)} has ${countedCurrent.length} verified snapshots. Frequency uses ${seasonLabel(focusNumber)} until this season has at least 6.`,
+        `${seasonLabel(current)} has ${currentDays} UTC day${currentDays === 1 ? "" : "s"} with a verified snapshot. Frequency uses ${seasonLabel(focusNumber)} until this season has at least ${FREQUENCY_MIN_DAYS} days.`,
       ),
     );
   }
   const focus = appearances(focusSnaps);
-  frequencyRoot.append(el("p", "", `${focus.snapshots} snapshots in ${seasonLabel(focusNumber)}.`));
+  frequencyRoot.append(
+    el(
+      "p",
+      "",
+      `${focus.days} UTC day${focus.days === 1 ? "" : "s"} in ${seasonLabel(focusNumber)}. A player counts once per day they were in the top 20.`,
+    ),
+  );
   const focusScroll = el("div", "table-scroll");
-  focusScroll.append(appearanceTable(withTiedCutoff(focus.rows, 20), `${focus.snapshots}`));
+  focusScroll.append(appearanceTable(withTiedCutoff(focus.rows, 20), `${focus.days}`));
   frequencyRoot.append(focusScroll);
 
   const across = appearancesAcross(seasons.map((season) => ({ season: season.number, snaps: toSnaps(season) })));
@@ -615,7 +616,7 @@ function render(): void {
   const head = el("tr");
   head.append(el("th", "", "Player"));
   for (const season of across.seasons) {
-    const cell = el("th", "num", `${seasonLabel(season.number)} / ${season.snapshots}`);
+    const cell = el("th", "num", `${seasonLabel(season.number)} / ${season.days} day${season.days === 1 ? "" : "s"}`);
     cell.scope = "col";
     head.append(cell);
   }
@@ -737,7 +738,7 @@ function render(): void {
 function appearanceTable(rows: { handle: string; appearances: number }[], denominator: string): HTMLTableElement {
   const table = el("table");
   const header = el("tr");
-  header.append(el("th", "", "Player"), el("th", "num", `Appearances of ${denominator}`));
+  header.append(el("th", "", "Player"), el("th", "num", `Days of ${denominator}`));
   const head = el("thead");
   head.append(header);
   const body = el("tbody");

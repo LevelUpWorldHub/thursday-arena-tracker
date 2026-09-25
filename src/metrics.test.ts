@@ -9,6 +9,7 @@ import {
   classifyLadder,
   coveringPair,
   dayMoverPlan,
+  FREQUENCY_MIN_DAYS,
   defaultChartSeason,
   frequencySeason,
   inTop20,
@@ -18,6 +19,7 @@ import {
   movementSnaps,
   ratingDeltas,
   rosterChanges,
+  rosterWindow,
   seasonEnded,
   seasonLabel,
   seriesFor,
@@ -232,6 +234,47 @@ describe("movers stay inside one season", () => {
 });
 
 describe("entrants and exits", () => {
+  it("compares entrants to the snapshot about 24 hours earlier, not the 15 minute neighbor", () => {
+    const end = Date.parse("2026-09-24T18:00:00Z");
+    const snaps = snapsEvery15Minutes(end, 24 * 4);
+    const roster = rosterWindow(snaps, "2026-09-20T00:00:00.000Z", end);
+    assert.equal(roster.kind, "about-24-hours");
+    if (roster.kind !== "about-24-hours") return;
+    assert.equal(roster.title, "About 24 hours");
+    const gap = Date.parse(roster.to.captured_at) - Date.parse(roster.from.captured_at);
+    assert.ok(gap >= 24 * 36e5);
+    assert.ok(gap < 24 * 36e5 + 15 * 60 * 1000);
+    assert.notEqual(roster.from.captured_at, snaps[snaps.length - 2].captured_at);
+  });
+
+  it("does not fall back to a short interval when 24 hours is not covered", () => {
+    const end = Date.parse("2026-09-24T18:00:00Z");
+    const snaps = snapsEvery15Minutes(end, 4);
+    const roster = rosterWindow(snaps, "2026-09-20T00:00:00.000Z", end);
+    assert.equal(roster.kind, "not-computed");
+  });
+
+  it("labels a young season since season start and spans the whole season", () => {
+    const snaps = [
+      snap(5, "2026-09-26T08:00:00Z", [row({ x_handle: "a", rank: 1, rating: 1000 })]),
+      snap(5, "2026-09-26T08:15:00Z", [row({ x_handle: "b", rank: 1, rating: 1010 })]),
+    ];
+    const roster = rosterWindow(snaps, "2026-09-26T07:00:00Z", Date.parse("2026-09-26T08:15:00Z"));
+    assert.equal(roster.kind, "since-start");
+    if (roster.kind !== "since-start") return;
+    assert.match(roster.title, /^Since season start/);
+    assert.equal(roster.from?.captured_at, snaps[0].captured_at);
+    assert.equal(roster.to?.captured_at, snaps[1].captured_at);
+  });
+
+  it("says everyone is new when the young season has one snapshot", () => {
+    const only = snap(5, "2026-09-26T08:00:00Z", [row({ x_handle: "a", rank: 1, rating: 1000 })]);
+    const roster = rosterWindow([only], "2026-09-26T07:00:00Z", Date.parse("2026-09-26T08:00:00Z"));
+    assert.equal(roster.kind, "since-start");
+    if (roster.kind !== "since-start") return;
+    assert.equal(roster.from, null);
+  });
+
   it("suppresses the first snapshot of a season", () => {
     const only = snap(7, "2026-09-26T08:00:00Z", [row({ x_handle: "a", rank: 1, rating: 1000 })]);
     const result = rosterChanges(null, only, true);
@@ -272,13 +315,39 @@ describe("entrants and exits", () => {
 });
 
 describe("frequency", () => {
-  it("counts appearances over the snapshots used, including a tie", () => {
+  it("counts one UTC day even when two snapshots fall on that day", () => {
     const snaps = [
       snap(7, "2026-09-24T00:00:00Z", [row({ x_handle: "a", rank: 1, rating: 10 }), row({ x_handle: "b", rank: 20, rating: 5 })], 20),
       snap(7, "2026-09-24T01:00:00Z", [row({ x_handle: "a", rank: 1, rating: 10 })], 20),
     ];
     const table = appearances(snaps);
-    assert.equal(table.snapshots, 2);
+    assert.equal(table.days, 1);
+    assert.equal(table.rows.find((item) => item.handle === "a")?.appearances, 1);
+    assert.equal(table.rows.find((item) => item.handle === "b")?.appearances, 1);
+  });
+
+  it("does not inflate days in the top 20 when snapshots are 15 minutes apart", () => {
+    const end = Date.parse("2026-09-24T18:00:00Z");
+    const snaps = snapsEvery15Minutes(end, 8).map((item, index, all) => {
+      const entries = [row({ x_handle: "a", rank: 1, rating: 1500 })];
+      if (index === all.length - 1) entries.push(row({ x_handle: "b", rank: 2, rating: 1400 }));
+      return { ...item, count: 20, entries };
+    });
+    const table = appearances(snaps);
+    assert.equal(snaps.length, 9);
+    assert.equal(table.days, 1);
+    assert.equal(table.rows.find((item) => item.handle === "a")?.appearances, 1);
+    assert.equal(table.rows.find((item) => item.handle === "b")?.appearances, 1);
+  });
+
+  it("counts a second UTC day separately", () => {
+    const snaps = [
+      snap(4, "2026-09-24T23:50:00Z", [row({ x_handle: "a", rank: 1, rating: 1 })], 20),
+      snap(4, "2026-09-25T00:05:00Z", [row({ x_handle: "a", rank: 1, rating: 1 }), row({ x_handle: "b", rank: 2, rating: 1 })], 20),
+      snap(4, "2026-09-25T00:20:00Z", [row({ x_handle: "a", rank: 1, rating: 1 })], 20),
+    ];
+    const table = appearances(snaps);
+    assert.equal(table.days, 2);
     assert.equal(table.rows.find((item) => item.handle === "a")?.appearances, 2);
     assert.equal(table.rows.find((item) => item.handle === "b")?.appearances, 1);
   });
@@ -288,14 +357,15 @@ describe("frequency", () => {
       { season: 2, snaps: [snap(2, "2026-09-18T00:00:00Z", [row({ x_handle: "a", rank: 1, rating: 10 })], 20)] },
       { season: 7, snaps: [snap(7, "2026-09-24T00:00:00Z", [row({ x_handle: "a", rank: 1, rating: 11 })], 20)] },
     ]);
-    assert.deepEqual(report.seasons.map((season) => season.snapshots), [1, 1]);
+    assert.deepEqual(report.seasons.map((season) => season.days), [1, 1]);
     assert.equal(report.rows[0].total, 2);
     assert.deepEqual(report.rows[0].bySeason.map((item) => item.appearances), [1, 1]);
   });
 
-  it("waits for enough snapshots before ranking a new season", () => {
-    assert.equal(frequencySeason(5, 10), "previous");
-    assert.equal(frequencySeason(6, 10), "current");
+  it("waits for enough distinct days before ranking a new season", () => {
+    assert.equal(FREQUENCY_MIN_DAYS, 2);
+    assert.equal(frequencySeason(1, 10), "previous");
+    assert.equal(frequencySeason(2, 10), "current");
   });
 
   it("the S4 snapshot count goes from 20 to 19 once the 2:39 PM PT unverified snapshot is excluded", () => {
@@ -307,7 +377,12 @@ describe("frequency", () => {
     snaps.push(unverified);
     assert.equal(snaps.length, 20);
     assert.equal(movementSnaps(snaps).length, 19);
-    assert.equal(appearances(snaps).snapshots, 19);
+    assert.equal(appearances(snaps).days, 1);
+    const withDay = appearances([
+      ...snaps.filter((item) => item.verified !== false),
+      snap(4, "2026-09-24T18:00:00.000Z", [row({ x_handle: "a", rank: 1, rating: 1500 })]),
+    ]);
+    assert.equal(withDay.days, 2);
   });
 
   it("counts rank 1 through 20 and skips a tied player past rank 20", () => {

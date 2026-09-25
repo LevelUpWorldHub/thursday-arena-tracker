@@ -1,6 +1,6 @@
 export const SEASON_START_RATING = 1000;
 export const STALE_AFTER_MS = 3 * 60 * 60 * 1000;
-export const FREQUENCY_MIN_SNAPSHOTS = 6;
+export const FREQUENCY_MIN_DAYS = 2;
 export const TOP_CUT = 20;
 
 export type LastSeason = {
@@ -363,18 +363,30 @@ export function rosterChanges(from: Snap | null, to: Snap | null, firstSnapshot:
 
 export type Appearance = { handle: string; appearances: number };
 
-export function appearances(snaps: Snap[]): { snapshots: number; rows: Appearance[] } {
-  const usable = movementSnaps(snaps);
-  const counts = new Map<string, number>();
-  for (const snap of usable) {
+export function utcDay(iso: string): string | null {
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) return null;
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+/** One appearance per UTC day in the top 20. Extra snapshots on the same day do not add. */
+export function appearances(snaps: Snap[]): { days: number; rows: Appearance[] } {
+  const days = new Set<string>();
+  const byHandle = new Map<string, Set<string>>();
+  for (const snap of movementSnaps(snaps)) {
+    const day = utcDay(snap.captured_at);
+    if (!day) continue;
+    days.add(day);
     for (const row of strictTop20(snap.entries)) {
-      counts.set(row.x_handle, (counts.get(row.x_handle) || 0) + 1);
+      const seen = byHandle.get(row.x_handle) ?? new Set<string>();
+      seen.add(day);
+      byHandle.set(row.x_handle, seen);
     }
   }
   return {
-    snapshots: usable.length,
-    rows: [...counts.entries()]
-      .map(([handle, count]) => ({ handle, appearances: count }))
+    days: days.size,
+    rows: [...byHandle.entries()]
+      .map(([handle, seen]) => ({ handle, appearances: seen.size }))
       .sort((a, b) => b.appearances - a.appearances || a.handle.localeCompare(b.handle)),
   };
 }
@@ -388,15 +400,15 @@ export function withTiedCutoff(rows: Appearance[], limit: number): Appearance[] 
 }
 
 export type SeasonAppearances = {
-  seasons: { number: number; snapshots: number }[];
+  seasons: { number: number; days: number }[];
   rows: { handle: string; total: number; bySeason: { season: number; appearances: number }[] }[];
 };
 
 export function appearancesAcross(groups: { season: number; snaps: Snap[] }[]): SeasonAppearances {
   const prepared = groups
     .map((group) => ({ season: group.season, table: appearances(group.snaps) }))
-    .filter((item) => item.table.snapshots > 0);
-  const seasons = prepared.map((item) => ({ number: item.season, snapshots: item.table.snapshots }));
+    .filter((item) => item.table.days > 0);
+  const seasons = prepared.map((item) => ({ number: item.season, days: item.table.days }));
   const byHandle = new Map<string, Map<number, number>>();
   for (const item of prepared) {
     const table = item.table;
@@ -421,10 +433,40 @@ export function appearancesAcross(groups: { season: number; snaps: Snap[] }[]): 
   return { seasons, rows };
 }
 
-export function frequencySeason(currentSnaps: number, previousSnaps: number): "current" | "previous" {
-  if (currentSnaps >= FREQUENCY_MIN_SNAPSHOTS) return "current";
-  if (previousSnaps > 0) return "previous";
+export function frequencySeason(currentDays: number, previousDays: number): "current" | "previous" {
+  if (currentDays >= FREQUENCY_MIN_DAYS) return "current";
+  if (previousDays > 0) return "previous";
   return "current";
+}
+
+export type RosterWindow =
+  | { kind: "about-24-hours"; title: string; from: Snap; to: Snap }
+  | { kind: "since-start"; title: string; from: Snap | null; to: Snap | null }
+  | { kind: "not-computed"; title: string; message: string };
+
+/** Entrants and exits use the ~24 hour anchor, or the whole young season. Never the 15-minute neighbor. */
+export function rosterWindow(snaps: Snap[], startsAt: string | null, nowMs: number): RosterWindow {
+  const usable = byTime(movementSnaps(snaps));
+  const latest = usable.length ? usable[usable.length - 1] : null;
+  const pair = coveringPair(usable, 24);
+  if (pair.ok) {
+    return { kind: "about-24-hours", title: "About 24 hours", from: pair.value.from, to: pair.value.to };
+  }
+  const age = seasonAgeHours(startsAt, nowMs, usable[0]?.captured_at ?? null);
+  if (justReset(age)) {
+    const rounded = Math.max(1, Math.round(age ?? 0));
+    return {
+      kind: "since-start",
+      title: `Since season start (${rounded} h)`,
+      from: usable.length >= 2 ? usable[0] : null,
+      to: latest,
+    };
+  }
+  return {
+    kind: "not-computed",
+    title: "About 24 hours",
+    message: "No stored snapshot covers about 24 hours inside this season. Not computed.",
+  };
 }
 
 export type Point = { t: string; rating: number; rank: number; season: number; mark?: "unverified" | "final" };
