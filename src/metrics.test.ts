@@ -390,6 +390,18 @@ describe("freshness", () => {
   });
 });
 
+function snapsEvery15Minutes(endMs: number, steps: number): Snap[] {
+  const snaps: Snap[] = [];
+  for (let i = steps; i >= 0; i--) {
+    snaps.push(
+      snap(4, new Date(endMs - i * 15 * 60 * 1000).toISOString(), [
+        row({ x_handle: "a", rank: 1, rating: 1000 + i }),
+      ]),
+    );
+  }
+  return snaps;
+}
+
 describe("covering pair", () => {
   it("uses a snapshot at least a full day before the latest one", () => {
     const snaps = [
@@ -399,5 +411,28 @@ describe("covering pair", () => {
     const pair = coveringPair(snaps, 24);
     assert.equal(pair.ok, true);
     if (pair.ok) assert.equal(pair.value.from.captured_at, snaps[0].captured_at);
+  });
+
+  it("keeps the 24 hour mover a full day back when snapshots are 15 minutes apart", () => {
+    const end = Date.parse("2026-09-24T18:00:00Z");
+    const snaps = snapsEvery15Minutes(end, 24 * 4);
+    const plan = dayMoverPlan(snaps, "2026-09-20T00:00:00.000Z", end);
+    assert.equal(plan.kind, "snapshots");
+    if (plan.kind !== "snapshots") return;
+    const gap = Date.parse(plan.to.captured_at) - Date.parse(plan.from.captured_at);
+    assert.ok(gap >= 24 * 36e5);
+    assert.ok(gap < 24 * 36e5 + 15 * 60 * 1000);
+    assert.notEqual(plan.from.captured_at, snaps[snaps.length - 2].captured_at);
+  });
+
+  it("does not treat a 15 minute neighbor as the 7 day anchor", () => {
+    const end = Date.parse("2026-09-24T18:00:00Z");
+    const snaps = snapsEvery15Minutes(end, 24 * 4);
+    const week = weekMoverPlan(snaps, 4, "2026-09-20T00:00:00.000Z", end);
+    assert.equal(week.kind, "season-to-date");
+    if (week.kind !== "season-to-date") return;
+    assert.equal(week.from?.captured_at, snaps[0].captured_at);
+    assert.equal(week.to?.captured_at, snaps[snaps.length - 1].captured_at);
+    assert.notEqual(week.from?.captured_at, snaps[snaps.length - 2].captured_at);
   });
 });

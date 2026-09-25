@@ -9,9 +9,9 @@ Times on the page are Pacific Time. Stored timestamps are UTC.
 - Current top 20 from a live leaderboard read when the browser can reach the API, otherwise the latest stored snapshot. Rank, handle (links to X), avatar, rating, W-L-D, and win% (wins divided by wins, losses, and draws).
 - If fewer than 20 rows are `ranked: true`, the table shows those rows and how many ranked players exist. If none are ranked, it says so and shows the previous season's final top 20 instead of an empty table.
 - Previous season card from `data/seasons/<n>/final.json` when that file exists. Otherwise it is labeled "Last snapshot, not official final."
-- Movers between two stored snapshots of the **same season number**, with both timestamps. A window shorter than 24 hours or 7 days is relabeled and is not presented as that window. A season younger than 24 hours uses "Movers since season start (N h)" against the 1000 starting rating, and players with no games are hidden. A season shorter than 7 days shows season-to-date. After the first 24 hours, a separate list can show "Current rating vs Season N finish (not a mover)" for players who have played at least one game. The match list is not a mover source. Unverified snapshots and saved season finals stay in the archive and on the chart, and they are not mover anchors.
+- Movers between two stored snapshots of the **same season number**, with both timestamps. Publishing every 15 minutes does not shrink these windows: the 24-hour and 7-day cards still use the stored snapshot at or before that mark, not the snapshot from 15 minutes earlier. A window shorter than 24 hours or 7 days is relabeled and is not presented as that window. A season younger than 24 hours uses "Movers since season start (N h)" against the 1000 starting rating, and players with no games are hidden. A season shorter than 7 days shows season-to-date. After the first 24 hours, a separate list can show "Current rating vs Season N finish (not a mover)" for players who have played at least one game. The match list is not a mover source. Unverified snapshots and saved season finals stay in the archive and on the chart, and they are not mover anchors.
 - Top-20 entrants and exits only when both snapshots are in the same season and have the same row count. The first snapshot of a season says everyone is new. A name missing from a shorter snapshot is not an exit from the ladder.
-- Top-20 appearance counts for one season, with the snapshot denominator. The count is ranks 1–20 on verified hourly snapshots only. A new season waits until it has 6 of those snapshots. The all-time table is a per-season breakdown plus a total.
+- Top-20 appearance counts for one season, with the snapshot denominator. The count is ranks 1–20 on verified snapshots only. A new season waits until it has 6 of those snapshots. The all-time table is a per-season breakdown plus a total.
 - Rating history for one player. Lines break at season boundaries. An official final is drawn at that season's end, or at the next season's start, rather than at the hour it was downloaded. Labels use the season number, because older snapshots used a name that does not match the number.
 - Catalog counts by rarity (and average cost, attack, and health) from the latest daily catalog snapshot.
 - An empty "Winning lineups / bot usage — coming soon" section. No usage numbers.
@@ -20,13 +20,13 @@ Times on the page are Pacific Time. Stored timestamps are UTC.
 ## Data flow
 
 ```
-hourly GitHub Action (minute 17, or workflow_dispatch)
+every 15 minutes (minutes 2, 17, 32, and 47, or workflow_dispatch)
   import seed into data/seasons/<number>/ if needed
   GET /api/public/v1/season          → data/seasons/index.json
   GET /api/public/v1/leaderboard?limit=100
     if the season number increased, mark the old one ended and
     GET /api/public/v1/leaderboard?season=<old>&limit=100  (cursor pages, up to 20)
-    an unfinished page set is saved with complete:false and retried next hour
+    an unfinished page set is saved with complete:false and retried on the next run
     save data/seasons/<old>/final.json
     also backfill final.json for the immediate previous season if it is missing
   append data/seasons/<number>/snapshots/<UTC-date>.json unless the board is unchanged
@@ -58,7 +58,7 @@ npm run build
 
 ## GitHub Pages
 
-The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages. Pull requests run the tests in `ci.yml`; the hourly job does not, so a test cannot block a deploy. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so the hourly job can push. No personal token and no paid services.
+The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages. Pull requests run the tests in `ci.yml`; the every-15-minutes job does not, so a test cannot block a deploy. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so that job can push. No personal token and no paid services.
 
 ## Linking Vercel later
 
