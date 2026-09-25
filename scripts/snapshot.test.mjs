@@ -6,7 +6,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { buildSiteData } from "./build-data.mjs";
-import { maybeWriteFinal, runSnapshot } from "./snapshot.mjs";
+import { fetchJson, maybeWriteFinal, runSnapshot } from "./snapshot.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -168,5 +168,166 @@ describe("quiet snapshot", () => {
     assert.equal(site.index.last_checked, checkedAt);
     assert.equal(await readOrNull(repoCache), cacheBefore);
     assert.equal(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }), gitBefore);
+  });
+});
+
+describe("fetch failures", () => {
+  it("returns ok:false on a timeout instead of throwing", async () => {
+    const original = globalThis.fetch;
+    globalThis.fetch = async () => {
+      throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
+    };
+    try {
+      const result = await fetchJson("https://example.test/leaderboard");
+      assert.equal(result.ok, false);
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+
+  it("retries a 429 once after Retry-After", async () => {
+    const original = globalThis.fetch;
+    let calls = 0;
+    globalThis.fetch = async () => {
+      calls += 1;
+      if (calls === 1) return new Response("slow", { status: 429, headers: { "retry-after": "0" } });
+      return new Response(JSON.stringify({ data: [] }), { status: 200, headers: { "content-type": "application/json" } });
+    };
+    try {
+      const result = await fetchJson("https://example.test/leaderboard");
+      assert.equal(calls, 2);
+      assert.equal(result.ok, true);
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+
+  it("does not throw when the injected fetch throws", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "arena-timeout-"));
+    const status = await runSnapshot({
+      root: dir,
+      fetchJson: async () => {
+        throw new Error("timed out");
+      },
+      now: () => new Date("2026-09-25T02:00:00.000Z"),
+    });
+    assert.equal(status, undefined);
+    assert.equal(await readOrNull(path.join(dir, "data/seasons/4/snapshots/2026-09-25.json")), null);
+  });
+});
+
+describe("empty ladder mid-season", () => {
+  it("keeps the last snapshot when the board comes back empty", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "arena-empty-"));
+    const seasons = path.join(dir, "data/seasons");
+    const capturedAt = "2026-09-25T18:00:00.000Z";
+    await writeJson(path.join(seasons, "index.json"), {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+      seasons: [{ number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z" }],
+    });
+    await writeJson(path.join(seasons, "4/snapshots/2026-09-25.json"), {
+      date: "2026-09-25",
+      season_number: 4,
+      snapshots: [
+        {
+          captured_at: "2026-09-25T17:00:00.000Z",
+          verified: true,
+          final: false,
+          season: { number: 4, state: "active" },
+          count: 1,
+          entries: [row(1, "kept")],
+        },
+      ],
+    });
+    await runSnapshot({
+      root: dir,
+      now: () => new Date(capturedAt),
+      fetchJson: async (url) => {
+        const href = String(url);
+        if (href.includes("/leaderboard")) {
+          return { ok: true, status: 200, body: { season: { number: 4, state: "active" }, data: [], next_cursor: null } };
+        }
+        if (href.includes("/season")) {
+          return {
+            ok: true,
+            status: 200,
+            body: {
+              current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+              next: null,
+            },
+          };
+        }
+        return { ok: false, error: "skip" };
+      },
+    });
+    const saved = JSON.parse(await readFile(path.join(seasons, "4/snapshots/2026-09-25.json"), "utf8"));
+    assert.equal(saved.snapshots.length, 1);
+    assert.equal(saved.snapshots[0].entries[0].x_handle, "kept");
+  });
+});
+
+describe("season final after reset", () => {
+  it("stores the ended season from leaderboard?season=4, not the default board", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "arena-reset-"));
+    const seasons = path.join(dir, "data/seasons");
+    const asked = [];
+    await writeJson(path.join(seasons, "index.json"), {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+      seasons: [{ number: 4, state: "active" }],
+    });
+    await writeJson(path.join(seasons, "4/snapshots/2026-09-25.json"), {
+      date: "2026-09-25",
+      season_number: 4,
+      snapshots: [
+        {
+          captured_at: "2026-09-25T18:00:00.000Z",
+          verified: true,
+          final: false,
+          season: { number: 4, state: "active" },
+          count: 1,
+          entries: [row(1, "s4champ")],
+        },
+      ],
+    });
+    const status = await runSnapshot({
+      root: dir,
+      now: () => new Date("2026-09-26T07:05:00.000Z"),
+      fetchJson: async (url) => {
+        const href = String(url);
+        asked.push(href);
+        if (href.includes("/leaderboard") && href.includes("season=4")) {
+          return {
+            ok: true,
+            status: 200,
+            body: { season: { number: 4, state: "ended" }, data: [row(1, "s4champ")], next_cursor: null },
+          };
+        }
+        if (href.includes("/leaderboard")) {
+          return {
+            ok: true,
+            status: 200,
+            body: { season: { number: 5, state: "active" }, data: [row(1, "s5new")], next_cursor: null },
+          };
+        }
+        if (href.includes("/season")) {
+          return {
+            ok: true,
+            status: 200,
+            body: {
+              current: { number: 5, state: "active", starts_at: "2026-09-26T07:00:00Z", ends_at: "2026-09-29T07:00:00Z" },
+              next: null,
+            },
+          };
+        }
+        return { ok: false, error: "skip" };
+      },
+    });
+    assert.equal(status, "wrote");
+    assert.ok(asked.some((href) => href.includes("leaderboard") && href.includes("season=4")));
+    const finalDoc = JSON.parse(await readFile(path.join(seasons, "4/final.json"), "utf8"));
+    assert.equal(finalDoc.season.number, 4);
+    assert.equal(finalDoc.entries[0].x_handle, "s4champ");
+    assert.equal(finalDoc.entries.some((entry) => entry.x_handle === "s5new"), false);
+    assert.match(finalDoc.source, /season=4/);
   });
 });

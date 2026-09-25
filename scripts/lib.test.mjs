@@ -5,10 +5,13 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { buildSiteData } from "./build-data.mjs";
 import {
+  acceptEmptyLadder,
   applyEndedSeason,
   fingerprint,
   indexSignature,
   normalizeSnap,
+  playerIdOf,
+  retryAfterMs,
   shouldWriteHourly,
   validateLeaderboard,
   validateSeasonIndex,
@@ -20,6 +23,36 @@ describe("hourly guard", () => {
     assert.equal(shouldWriteHourly(5, 5), true);
     assert.equal(shouldWriteHourly(6, 5), true);
     assert.equal(shouldWriteHourly(5, null), true);
+  });
+});
+
+describe("empty ladder and retry-after", () => {
+  it("accepts an empty board right after reset and rejects one mid-season when rows are stored", () => {
+    const start = Date.parse("2026-09-23T07:00:00Z");
+    assert.equal(acceptEmptyLadder("2026-09-23T07:00:00Z", start + 2 * 36e5, true), true);
+    assert.equal(acceptEmptyLadder("2026-09-23T07:00:00Z", start + 30 * 36e5, true), false);
+    assert.equal(acceptEmptyLadder("2026-09-23T07:00:00Z", start + 30 * 36e5, false), true);
+    assert.equal(acceptEmptyLadder(null, start, true), false);
+  });
+
+  it("reads Retry-After seconds and HTTP dates", () => {
+    assert.equal(retryAfterMs("0", 1_000), 0);
+    assert.equal(retryAfterMs("2", 1_000), 2000);
+    assert.equal(retryAfterMs(new Date(5_000).toUTCString(), 1_000), 4000);
+    assert.equal(retryAfterMs("", 1_000), 1000);
+  });
+
+  it("keeps a string or numeric player id and leaves the fingerprint shape alone", () => {
+    const snap = normalizeSnap({
+      captured_at: "2026-09-24T00:00:00.000Z",
+      season: { number: 4, state: "active" },
+      entries: [{ rank: 1, x_handle: "a", rating: 1100, wins: 1, losses: 0, draws: 0, user_id: 42 }],
+    });
+    assert.equal(snap.entries[0].player_id, "42");
+    assert.equal(playerIdOf({ player_id: " p1 " }), "p1");
+    const before = fingerprint(4, [{ rank: 1, x_handle: "a", rating: 1100, wins: 1, losses: 0, draws: 0 }]);
+    const after = fingerprint(4, [{ rank: 1, x_handle: "a", rating: 1100, wins: 1, losses: 0, draws: 0, player_id: "p1" }]);
+    assert.equal(before, after);
   });
 });
 

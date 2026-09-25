@@ -17,5 +17,13 @@ describe("weekly meta signup", () => {
     assert.equal(rendered.includes(mailto), true);
     assert.equal(rendered.includes("thursdayarena@agentmail.to"), true);
     assert.equal(rendered.includes("To unsubscribe anytime, email the same address with 'unsubscribe'."), true);
+    assert.equal(
+      rendered.includes(
+        "Unofficial fan-made tracker. Not affiliated with or endorsed by Thursday Arena. Data from Thursday Arena's public API.",
+      ),
+      true,
+    );
+    assert.equal(rendered.includes("Tracker code is"), true);
+    assert.equal(rendered.includes("blob/main/LICENSE"), true);
   });
 });
