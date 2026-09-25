@@ -25,6 +25,7 @@ import {
   seasonEnded,
   seasonLabel,
   seriesFor,
+  freshnessFallbackNote,
   showEmptyLiveBoard,
   showUnverifiedNote,
   playersShownNote,
@@ -421,6 +422,11 @@ describe("frequency", () => {
     assert.equal(playersShownNote(36, 36), null);
     assert.equal(topShownNote(8, 8), null);
     assert.equal(topShownNote(8, 12), "top 8 shown");
+    assert.equal(
+      freshnessFallbackNote(true),
+      "last scheduled snapshot failed; history below is stored data",
+    );
+    assert.equal(freshnessFallbackNote(false), "showing stored data");
   });
 
   it("computes the Season 4 appearance cutoff from the committed snapshots", () => {

@@ -25,6 +25,7 @@ import {
   chartInstant,
   seriesFor,
   showEmptyLiveBoard,
+  freshnessFallbackNote,
   showUnverifiedNote,
   sinceStartLabel,
   playersShownNote,
@@ -408,7 +409,7 @@ function render(): void {
     freshness.append(document.createTextNode(` · Last check: ${formatPt(site.index.last_checked)}`));
   }
   if (site.index.fetch_failed) {
-    freshness.append(document.createTextNode(" · showing stored data"));
+    freshness.append(document.createTextNode(` · ${freshnessFallbackNote(live != null)}`));
   }
   if (isStale(site.index.last_checked, latest?.captured_at ?? null, now)) {
     freshness.append(el("span", "badge stale", "Stale snapshot"));

@@ -277,30 +277,46 @@ describe("empty ladder mid-season", () => {
         },
       ],
     });
-    await runSnapshot({
-      root: dir,
-      now: () => new Date(capturedAt),
-      fetchJson: async (url) => {
-        const href = String(url);
-        if (href.includes("/leaderboard")) {
-          return { ok: true, status: 200, body: { season: { number: 4, state: "active" }, data: [], next_cursor: null } };
-        }
-        if (href.includes("/season")) {
-          return {
-            ok: true,
-            status: 200,
-            body: {
-              current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
-              next: null,
-            },
-          };
-        }
-        return { ok: false, error: "skip" };
-      },
-    });
+    const logs = [];
+    const original = console.log;
+    console.log = (...args) => {
+      logs.push(args.map(String).join(" "));
+      original(...args);
+    };
+    let status;
+    try {
+      status = await runSnapshot({
+        root: dir,
+        now: () => new Date(capturedAt),
+        fetchJson: async (url) => {
+          const href = String(url);
+          if (href.includes("/leaderboard")) {
+            return { ok: true, status: 200, body: { season: { number: 4, state: "active" }, data: [], next_cursor: null } };
+          }
+          if (href.includes("/season")) {
+            return {
+              ok: true,
+              status: 200,
+              body: {
+                current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z", ends_at: "2026-09-26T07:00:00Z" },
+                next: null,
+              },
+            };
+          }
+          return { ok: false, error: "skip" };
+        },
+      });
+    } finally {
+      console.log = original;
+    }
+    assert.equal(status, "skipped");
+    assert.match(logs.join("\n"), /::warning::Empty leaderboard mid-season/);
     const saved = JSON.parse(await readFile(path.join(seasons, "4/snapshots/2026-09-25.json"), "utf8"));
     assert.equal(saved.snapshots.length, 1);
     assert.equal(saved.snapshots[0].entries[0].x_handle, "kept");
+    const index = JSON.parse(await readFile(path.join(seasons, "index.json"), "utf8"));
+    assert.equal(index.fetch_failed, true);
+    assert.equal(await readOrNull(path.join(dir, ".cache/last-check.json")), null);
   });
 });
 
