@@ -168,6 +168,39 @@ footer p { margin: 0.2rem 0; }
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+@media (max-width: 720px) {
+  .wrap,
+  #ladder {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #ladder .table-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+    min-width: 0;
+  }
+  #ladder .ladder {
+    width: max-content;
+    min-width: 100%;
+  }
+  #ladder .ladder th,
+  #ladder .ladder td.num {
+    white-space: nowrap;
+    padding: 0.4rem 0.3rem;
+  }
+  #ladder .ladder th {
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+  #ladder .ladder td {
+    font-size: 0.82rem;
+  }
+  #ladder .avatar,
+  #ladder .initials {
+    width: 28px;
+    height: 28px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
