@@ -299,9 +299,15 @@ export async function runSnapshot(options = {}) {
   const board = await fetchPages(null, 1, false, fetchImpl);
   if (!board.ok) {
     console.error(`ladder skipped: ${board.error}`);
+    console.log(`::warning::Leaderboard fetch failed (${board.error}). Showing stored data.`);
+    index.fetch_failed = true;
+    await mkdir(seasonsDir, { recursive: true });
+    await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
     setOutput("skipped");
-    return;
+    console.log("status=skipped");
+    return "skipped";
   }
+  if (index.fetch_failed) delete index.fetch_failed;
   const incoming = board.season.number;
   const storedCurrent = await storedCurrentNumber(index, seasonsDir);
   if (!shouldWriteHourly(incoming, storedCurrent)) {

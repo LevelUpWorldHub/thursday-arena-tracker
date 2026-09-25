@@ -14,7 +14,7 @@ describe("lineups section", () => {
     const section = html.slice(html.indexOf('id="lineups"'), html.indexOf('id="meta-report"'));
     const present = [
       "2,611 rated Season 4 matches involving top-20 players",
-      "about 9,165 rated matches",
+      "about 9,165 rated Season 4 matches as of Sep 24, 6:45 PM PT",
       "Sep 23 12:05 AM – Sep 24 2:36 PM PT",
       "4,800 top-20 lineup-games",
       "2,663 different boards across 4,800 lineup-games",
@@ -23,9 +23,10 @@ describe("lineups section", () => {
       "15.7% (n=108)",
       "51.8% (n=4,258)",
       "36.0% without Fusion (n=542)",
-      "Fusion only exists on Season 4 boards",
+      "Most consistent Fusion (best in both views)",
       "61.3% (n=481)",
       "62.2% (n=296)",
+      "5 of 17 shown",
       "63.5% (n=159)",
       "71.2% (n=139)",
       "57.1% (n=156)",
@@ -45,7 +46,7 @@ describe("lineups section", () => {
     for (const text of present) {
       assert.equal(section.includes(text), true, `missing ${text}`);
     }
-    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%", "55%+", "61–62%"];
+    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%", "55%+", "61–62%", "Fusion only exists on Season 4 boards", "Best Fusion"];
     for (const text of absent) {
       assert.equal(section.includes(text), false, `stale mixed-season figure ${text}`);
     }

@@ -204,15 +204,53 @@ describe("fetch failures", () => {
 
   it("does not throw when the injected fetch throws", async () => {
     const dir = await mkdtemp(path.join(tmpdir(), "arena-timeout-"));
-    const status = await runSnapshot({
-      root: dir,
-      fetchJson: async () => {
-        throw new Error("timed out");
-      },
-      now: () => new Date("2026-09-25T02:00:00.000Z"),
+    const seasons = path.join(dir, "data/seasons");
+    await writeJson(path.join(seasons, "index.json"), {
+      current: { number: 4, state: "active", starts_at: "2026-09-23T07:00:00Z" },
+      seasons: [{ number: 4, state: "active" }],
     });
-    assert.equal(status, undefined);
-    assert.equal(await readOrNull(path.join(dir, "data/seasons/4/snapshots/2026-09-25.json")), null);
+    await writeJson(path.join(seasons, "4/snapshots/2026-09-25.json"), {
+      date: "2026-09-25",
+      season_number: 4,
+      snapshots: [
+        {
+          captured_at: "2026-09-25T01:00:00.000Z",
+          verified: true,
+          season: { number: 4, state: "active" },
+          count: 1,
+          entries: [row(1, "kept")],
+        },
+      ],
+    });
+    const logs = [];
+    const original = console.log;
+    console.log = (...args) => {
+      logs.push(args.map(String).join(" "));
+      original(...args);
+    };
+    let status;
+    try {
+      status = await runSnapshot({
+        root: dir,
+        fetchJson: async () => {
+          throw new Error("timed out");
+        },
+        now: () => new Date("2026-09-25T02:00:00.000Z"),
+      });
+    } finally {
+      console.log = original;
+    }
+    assert.equal(status, "skipped");
+    assert.match(logs.join("\n"), /::warning::Leaderboard fetch failed/);
+    const saved = JSON.parse(await readFile(path.join(seasons, "4/snapshots/2026-09-25.json"), "utf8"));
+    assert.equal(saved.snapshots.length, 1);
+    assert.equal(saved.snapshots[0].entries[0].x_handle, "kept");
+    const index = JSON.parse(await readFile(path.join(seasons, "index.json"), "utf8"));
+    assert.equal(index.fetch_failed, true);
+    await buildSiteData({ root: dir, outFile: path.join(dir, "public/data/site-data.json") });
+    const site = JSON.parse(await readFile(path.join(dir, "public/data/site-data.json"), "utf8"));
+    assert.equal(site.index.fetch_failed, true);
+    assert.equal(site.seasons[0].snapshots[0].entries[0].x_handle, "kept");
   });
 });
 
