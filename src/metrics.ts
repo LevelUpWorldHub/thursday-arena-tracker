@@ -415,6 +415,13 @@ export function withTiedCutoff(rows: Appearance[], limit: number): Appearance[] 
   return rows.slice(0, end);
 }
 
+/** What to say when the scheduled snapshot failed. The live board and the stored history are different. */
+export function freshnessFallbackNote(liveLoaded: boolean): string {
+  return liveLoaded
+    ? "last scheduled snapshot failed; history below is stored data"
+    : "showing stored data";
+}
+
 /** The unverified-snapshot note belongs on the stored board, not under a live top 20. */
 export function showUnverifiedNote(showingStoredBoard: boolean, unverifiedCount: number): boolean {
   return showingStoredBoard && unverifiedCount > 0;

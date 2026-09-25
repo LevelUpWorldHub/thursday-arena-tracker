@@ -345,6 +345,13 @@ export async function runSnapshot(options = {}) {
   let wroteLadder = false;
   if (keepLast) {
     console.error("empty ladder mid-season; keeping the last snapshot");
+    console.log("::warning::Empty leaderboard mid-season. Showing stored data.");
+    index.fetch_failed = true;
+    await mkdir(seasonsDir, { recursive: true });
+    await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+    setOutput("skipped");
+    console.log("status=skipped");
+    return "skipped";
   } else {
     const nextFp = fingerprint(incoming, board.entries);
     const same = latest && fingerprint(latest.season.number, latest.entries) === nextFp;
