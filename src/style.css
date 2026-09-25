@@ -121,6 +121,19 @@ button.chip[aria-pressed="true"], .chips button[aria-pressed="true"] {
   color: #1a1208;
   border-color: var(--gold);
 }
+a.chip {
+  display: inline-block;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: var(--gold);
+  color: #1a1208;
+  font-weight: 600;
+  text-decoration: none;
+}
+a.chip:hover { color: #1a1208; }
+#meta-report { overflow-wrap: anywhere; }
 .prior { color: var(--faint); font-size: 0.8rem; }
 .delta.up { color: var(--up); }
 .delta.down { color: var(--down); }
