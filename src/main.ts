@@ -566,6 +566,7 @@ function render(): void {
   const roster = rosterWindow(storedCurrent, clock?.starts_at ?? null, now);
   const card = el("div", "panel");
   card.append(el("h3", "", roster.title));
+  card.append(el("p", "note", "A renamed handle with no stable player id appears as one exit plus one new entrant."));
   if (roster.kind === "since-start" && !roster.from) {
     card.append(el("p", "", "Since season start — everyone is new."));
   } else if (roster.kind === "not-computed") {
@@ -606,9 +607,6 @@ function render(): void {
       }
       grid.append(entered, exited);
       card.append(grid);
-      card.append(
-        el("p", "note", "A renamed handle with no stable player id appears as one exit plus one new entrant."),
-      );
     }
   }
   rosterRoot.append(card);
