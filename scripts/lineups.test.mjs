@@ -23,10 +23,10 @@ describe("lineups section", () => {
       "15.7% (n=108)",
       "51.8% (n=4,258)",
       "36.0% without Fusion (n=542)",
-      "Charmer Fusion (Personal + Sales): 61.3% (n=481) overall and 62.2% (n=296) without sodiumhyrdride, consistent across both views",
+      "Charmer Fusion (Personal + Sales): 61.3% (n=481) overall and 62.2% (n=296) without sodiumhyrdride, consistent with and without sodiumhyrdride",
       "61.3% (n=481)",
       "62.2% (n=296)",
-      "Top 5 of 17 by the lower of the two win rates",
+      "Of the 17 bots that won at least 55% both overall and without sodiumhyrdride (5+ top-20 players, n≥60 overall and n≥40 without), the top 5 by the lower of the two rates",
       "Meeting Recap Deck 61.0% (n=159) / 61.8% (n=76)",
       "Foundry 62.0% (n=184) / 60.3% (n=63)",
       "Alchemist 64.2% (n=218) / 58.5% (n=106)",
@@ -46,7 +46,7 @@ describe("lineups section", () => {
     for (const text of present) {
       assert.equal(section.includes(text), true, `missing ${text}`);
     }
-    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%", "55%+", "61–62%", "Fusion only exists on Season 4 boards", "Best Fusion", "Most consistent", "best in both views", "5 of 17 shown", "Clip Bot"];
+    const absent = ["3,235", "5,684", "3,045", "34.3%", "only 5.9%", "99.0%", "Sep 19", "1,545", "5-14-3", "14 of 22", "48%", "55%+", "61–62%", "Fusion only exists on Season 4 boards", "Best Fusion", "Most consistent", "best in both views", "consistent across both views", "Top 5 of 17 by the lower of the two win rates", "5 of 17 shown", "Clip Bot"];
     for (const text of absent) {
       assert.equal(section.includes(text), false, `stale mixed-season figure ${text}`);
     }
