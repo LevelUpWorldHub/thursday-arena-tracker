@@ -23,5 +23,7 @@ describe("weekly meta signup", () => {
       ),
       true,
     );
+    assert.equal(rendered.includes("Tracker code is"), true);
+    assert.equal(rendered.includes("blob/main/LICENSE"), true);
   });
 });

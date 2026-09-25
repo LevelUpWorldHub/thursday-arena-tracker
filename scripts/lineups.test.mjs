@@ -13,7 +13,7 @@ describe("lineups section", () => {
     const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
     const section = html.slice(html.indexOf('id="lineups"'), html.indexOf('id="meta-report"'));
     const present = [
-      "2,611 rated Season 4 matches",
+      "2,611 Season 4 matches involving top-20 players",
       "Sep 23 12:05 AM – Sep 24 2:36 PM PT",
       "2,663 different boards across 4,800 lineups",
       "most-used bot (Vigil) is in only 6.5%",
