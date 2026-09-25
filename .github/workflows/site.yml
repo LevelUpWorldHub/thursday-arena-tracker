@@ -1,3 +1,4 @@
+# Touched 2026-09-25 so GitHub re-reads this cron from the default branch.
 name: Snapshot and publish
 
 on:

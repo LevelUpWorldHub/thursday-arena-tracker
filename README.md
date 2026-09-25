@@ -9,19 +9,19 @@ Times on the page are Pacific Time. Stored timestamps are UTC.
 - Current top 20 from a live leaderboard read when the browser can reach the API, otherwise the latest stored snapshot. Rank, handle (links to X), avatar, rating, W-L-D, and win% (wins divided by wins, losses, and draws).
 - If fewer than 20 rows are `ranked: true`, the table shows those rows and how many ranked players exist. If none are ranked, it says so and shows the previous season's final top 20 instead of an empty table.
 - Previous season card from `data/seasons/<n>/final.json` when that file exists. Otherwise it is labeled "Last snapshot, not official final."
-- Movers between two stored snapshots of the **same season number**, with both timestamps. Publishing every 15 minutes does not shrink these windows: the 24-hour and 7-day cards still use the stored snapshot at or before that mark, not the snapshot from 15 minutes earlier. A window shorter than 24 hours or 7 days is relabeled and is not presented as that window. A season younger than 24 hours uses "Movers since season start (N h)" against the 1000 starting rating, and players with no games are hidden. A season shorter than 7 days shows season-to-date. After the first 24 hours, a separate list can show "Current rating vs Season N finish (not a mover)" for players who have played at least one game. The match list is not a mover source. Unverified snapshots and saved season finals stay in the archive and on the chart, and they are not mover anchors.
-- Top-20 entrants and exits compare the latest verified snapshot with the one about 24 hours earlier. The card is labeled "About 24 hours" and shows both timestamps. A season younger than 24 hours is labeled "Since season start" and compares the earliest stored snapshot with the latest, or says everyone is new when only one snapshot exists. It does not use the snapshot from 15 minutes earlier. Both snapshots must be the same season and the same row count. A name missing from a shorter snapshot is not an exit from the ladder. When a row includes `player_id`, `user_id`, or `id`, roster changes, rating deltas, appearance days, and the rating chart follow that id. A renamed handle with the same id is one player. The public leaderboard does not send an id today, so a rename with only `x_handle` still looks like an exit and a new entrant.
+- Movers between two stored snapshots of the **same season number**, with both timestamps. Extra snapshots do not shrink these windows: the 24-hour and 7-day cards still use the stored snapshot at or before that mark, not the immediately previous snapshot. A window shorter than 24 hours or 7 days is relabeled and is not presented as that window. A season younger than 24 hours uses "Movers since season start (N h)" against the 1000 starting rating, and players with no games are hidden. A season shorter than 7 days shows season-to-date. After the first 24 hours, a separate list can show "Current rating vs Season N finish (not a mover)" for players who have played at least one game. The match list is not a mover source. Unverified snapshots and saved season finals stay in the archive and on the chart, and they are not mover anchors.
+- Top-20 entrants and exits compare the latest verified snapshot with the one about 24 hours earlier. The card is labeled "About 24 hours" and shows both timestamps. A season younger than 24 hours is labeled "Since season start" and compares the earliest stored snapshot with the latest, or says everyone is new when only one snapshot exists. It does not use the immediately previous snapshot. Both snapshots must be the same season and the same row count. A name missing from a shorter snapshot is not an exit from the ladder. When a row includes `player_id`, `user_id`, or `id`, roster changes, rating deltas, appearance days, and the rating chart follow that id. A renamed handle with the same id is one player. The public leaderboard does not send an id today, so a rename with only `x_handle` still looks like an exit and a new entrant.
 - Top-20 appearance counts for one season. A player counts once per UTC day they were in ranks 1–20 on a verified snapshot. The denominator is the number of distinct UTC days with a verified snapshot, shown as "N of M days". Extra snapshots on the same day do not add to the count. A new season waits until it has 2 of those days when the previous season has any. The all-time table is a per-season breakdown plus a total.
 - Rating history for one player. Lines break at season boundaries. An official final is drawn at that season's end, or at the next season's start, rather than at the hour it was downloaded. Labels use the season number, because older snapshots used a name that does not match the number.
 - Catalog counts by rarity (and average cost, attack, and health) from the latest daily catalog snapshot.
 - A weekly meta report signup. It is a mailto link to thursdayarena@agentmail.to. There is no form backend and no new dependency.
-- Season 4 winning lineups, a static snapshot of rated matches from the top 20 on the Sep 24, 2026 leaderboard. Not live data.
+- Season 4 winning lineups, a static snapshot of 2,611 rated Season 4 matches from the top 20 on the Sep 24, 2026 leaderboard. Not live data.
 - Freshness in PT, plus a stale badge when the last successful check is more than 3 hours old. After a season's stored end time, the header says that season ended and the next snapshot has not arrived.
 
 ## Data flow
 
 ```
-every 15 minutes (minutes 2, 17, 32, and 47, or workflow_dispatch)
+scheduled GitHub Action (cron in site.yml), with workflow_dispatch as the manual backup
   import seed into data/seasons/<number>/ if needed
   GET /api/public/v1/season          → data/seasons/index.json
   GET /api/public/v1/leaderboard?limit=100
@@ -61,7 +61,11 @@ npm run build
 
 ## GitHub Pages
 
-The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages. Pull requests run the tests in `ci.yml`; the every-15-minutes job does not, so a test cannot block a deploy. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so that job can push. No personal token and no paid services.
+The repo uses a workflow build. `.github/workflows/site.yml` snapshots, commits `data/`, and deploys `dist/` to GitHub Pages on its schedule, and `workflow_dispatch` is the manual backup. Pull requests run the tests in `ci.yml`; the scheduled job does not, so a test cannot block a deploy. The site URL is `https://levelupworldhub.github.io/thursday-arena-tracker/`. Actions needs permission to write contents so that job can push. No personal token and no paid services.
+
+## License
+
+The tracker code is [MIT](LICENSE). Game data, bot names, and art belong to Thursday Arena. This project is not affiliated with or endorsed by Thursday Arena.
 
 ## Linking Vercel later
 
