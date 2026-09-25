@@ -23,6 +23,7 @@ import {
   seasonEnded,
   seasonLabel,
   seriesFor,
+  showEmptyLiveBoard,
   sinceStartLabel,
   versusPreviousSeason,
   weekMoverPlan,
@@ -509,5 +510,53 @@ describe("covering pair", () => {
     assert.equal(week.from?.captured_at, snaps[0].captured_at);
     assert.equal(week.to?.captured_at, snaps[snaps.length - 1].captured_at);
     assert.notEqual(week.from?.captured_at, snaps[snaps.length - 2].captured_at);
+  });
+});
+
+describe("player id", () => {
+  it("keeps a renamed player when the id is stable", () => {
+    const from = snap(4, "2026-09-24T00:00:00Z", [row({ x_handle: "oldname", player_id: "p1", rank: 1, rating: 1500 })], 20);
+    const to = snap(4, "2026-09-24T01:00:00Z", [row({ x_handle: "newname", player_id: "p1", rank: 1, rating: 1510 })], 20);
+    const roster = rosterChanges(from, to, false);
+    assert.equal(roster.ok, true);
+    if (roster.ok) {
+      assert.equal(roster.value.entered.length, 0);
+      assert.equal(roster.value.exited.length, 0);
+    }
+    const deltas = ratingDeltas(from, to);
+    assert.equal(deltas.ok, true);
+    if (deltas.ok) {
+      assert.equal(deltas.value.length, 1);
+      assert.equal(deltas.value[0].handle, "newname");
+      assert.equal(deltas.value[0].ratingDelta, 10);
+    }
+    const points = seriesFor([from, to], "newname");
+    assert.equal(points.length, 2);
+    assert.deepEqual(points.map((point) => point.rating), [1500, 1510]);
+    const table = appearances([from, to]);
+    assert.equal(table.rows.length, 1);
+    assert.equal(table.rows[0].handle, "newname");
+    assert.equal(table.rows[0].appearances, 1);
+  });
+
+  it("still splits a rename that has only a handle", () => {
+    const from = snap(4, "2026-09-24T00:00:00Z", [row({ x_handle: "oldname", rank: 1, rating: 1500 })], 20);
+    const to = snap(4, "2026-09-24T01:00:00Z", [row({ x_handle: "newname", rank: 1, rating: 1510 })], 20);
+    const roster = rosterChanges(from, to, false);
+    assert.equal(roster.ok, true);
+    if (roster.ok) {
+      assert.deepEqual(roster.value.entered.map((item) => item.x_handle), ["newname"]);
+      assert.equal(roster.value.exited[0].handle, "oldname");
+    }
+    assert.equal(seriesFor([from, to], "newname").length, 1);
+  });
+});
+
+describe("empty live board", () => {
+  it("keeps stored rows mid-season and allows an empty board right after reset", () => {
+    assert.equal(showEmptyLiveBoard(0, true, 48), false);
+    assert.equal(showEmptyLiveBoard(0, true, 2), true);
+    assert.equal(showEmptyLiveBoard(0, false, 48), true);
+    assert.equal(showEmptyLiveBoard(3, true, 48), true);
   });
 });

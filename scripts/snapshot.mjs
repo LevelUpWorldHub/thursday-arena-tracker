@@ -4,11 +4,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
+  acceptEmptyLadder,
   applyEndedSeason,
   backfillEnds,
   fingerprint,
   indexSignature,
   normalizeSnap,
+  retryAfterMs,
   shouldWriteHourly,
   utcDay,
   validateCatalog,
@@ -35,13 +37,40 @@ function runImport() {
   });
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, {
-    headers: { accept: "application/json", "user-agent": USER_AGENT },
-    signal: AbortSignal.timeout(20_000),
-  });
+const MAX_RETRY_AFTER_MS = 120_000;
+
+async function guarded(fetchImpl, url) {
+  try {
+    const fetched = await fetchImpl(url);
+    if (!fetched || typeof fetched !== "object") return { ok: false, error: "fetch returned no result" };
+    return fetched;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`fetch failed: ${message}`);
+    return { ok: false, error: message };
+  }
+}
+
+export async function fetchJson(url, attempt = 0) {
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: { accept: "application/json", "user-agent": USER_AGENT },
+      signal: AbortSignal.timeout(20_000),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`fetch failed: ${message}`);
+    return { ok: false, error: message };
+  }
   const remaining = response.headers.get("x-ratelimit-remaining");
   console.log(`${response.status} ${url} rate-remaining=${remaining ?? "n/a"}`);
+  if (response.status === 429 && attempt === 0) {
+    const wait = Math.min(retryAfterMs(response.headers.get("retry-after")), MAX_RETRY_AFTER_MS);
+    console.log(`429; retrying once after ${wait}ms`);
+    await new Promise((resolve) => setTimeout(resolve, wait));
+    return fetchJson(url, attempt + 1);
+  }
   if (!response.ok) {
     return { ok: false, error: `HTTP ${response.status} for ${url}`, status: response.status };
   }
@@ -131,7 +160,7 @@ async function fetchPages(seasonNumber, maxPages, exhaustive, fetchImpl = fetchJ
     url.searchParams.set("limit", "100");
     if (seasonNumber != null) url.searchParams.set("season", String(seasonNumber));
     if (cursor) url.searchParams.set("cursor", cursor);
-    const fetched = await fetchImpl(url);
+    const fetched = await guarded(fetchImpl, url);
     if (!fetched.ok) return { ok: false, error: fetched.error };
     const valid = validateLeaderboard(fetched.body);
     if (!valid.ok) return { ok: false, error: valid.error };
@@ -208,7 +237,7 @@ async function maybeWriteCatalog(options = {}) {
     console.log(`catalog ${day} already stored`);
     return "exists";
   }
-  const fetched = await fetchImpl(CATALOG_URL);
+  const fetched = await guarded(fetchImpl, CATALOG_URL);
   if (!fetched.ok) {
     console.error(`catalog skipped: ${fetched.error}`);
     return "skipped";
@@ -263,7 +292,7 @@ export async function runSnapshot(options = {}) {
   const signatureBefore = indexSignature(index);
   const checkedAt = clock().toISOString();
 
-  const seasonFetched = await fetchImpl(`${API}/season`);
+  const seasonFetched = await guarded(fetchImpl, `${API}/season`);
   const seasonIndex = seasonFetched.ok ? validateSeasonIndex(seasonFetched.body) : { ok: false, error: seasonFetched.error };
   if (!seasonIndex.ok) console.error(`season index skipped: ${seasonIndex.error}`);
 
@@ -301,24 +330,33 @@ export async function runSnapshot(options = {}) {
 
   const existing = await loadSeasonSnapshots(incoming, seasonsDir);
   const latest = existing[existing.length - 1];
-  const nextFp = fingerprint(incoming, board.entries);
-  const same = latest && fingerprint(latest.season.number, latest.entries) === nextFp;
-  let wroteLadder = false;
   const capturedAt = clock().toISOString();
-  if (same) {
-    console.log(`season ${incoming} board unchanged; not writing a duplicate snapshot`);
+  const startsAt =
+    seasonIndex.ok && seasonIndex.current.number === incoming ? seasonIndex.current.starts_at : null;
+  const keepLast =
+    board.entries.length === 0 &&
+    !acceptEmptyLadder(startsAt, Date.parse(capturedAt), existing.some((snap) => snap.entries.length > 0));
+  let wroteLadder = false;
+  if (keepLast) {
+    console.error("empty ladder mid-season; keeping the last snapshot");
   } else {
-    await writeHourly(
-      {
-        captured_at: capturedAt,
-        source: `${API}/leaderboard?limit=100`,
-        season: { number: board.season.number, state: board.season.state },
-        count: board.entries.length,
-        entries: board.entries,
-      },
-      seasonsDir,
-    );
-    wroteLadder = true;
+    const nextFp = fingerprint(incoming, board.entries);
+    const same = latest && fingerprint(latest.season.number, latest.entries) === nextFp;
+    if (same) {
+      console.log(`season ${incoming} board unchanged; not writing a duplicate snapshot`);
+    } else {
+      await writeHourly(
+        {
+          captured_at: capturedAt,
+          source: `${API}/leaderboard?limit=100`,
+          season: { number: board.season.number, state: board.season.state },
+          count: board.entries.length,
+          entries: board.entries,
+        },
+        seasonsDir,
+      );
+      wroteLadder = true;
+    }
   }
 
   const after = await loadSeasonSnapshots(incoming, seasonsDir);

@@ -120,6 +120,25 @@ export function indexSignature(index) {
   return JSON.stringify(copy);
 }
 
+export function retryAfterMs(header, nowMs = Date.now()) {
+  if (header == null || String(header).trim() === "") return 1000;
+  const seconds = Number(header);
+  if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);
+  const when = Date.parse(String(header));
+  if (!Number.isNaN(when)) return Math.max(0, when - nowMs);
+  return 1000;
+}
+
+/** An empty board is real right after reset. Mid-season, keep the last snapshot that had rows. */
+export function acceptEmptyLadder(startsAt, nowMs, hasStoredRows) {
+  if (!hasStoredRows) return true;
+  if (typeof startsAt !== "string") return false;
+  const start = Date.parse(startsAt);
+  if (Number.isNaN(start)) return false;
+  const ageHours = (nowMs - start) / 36e5;
+  return ageHours >= 0 && ageHours < 24;
+}
+
 export function shouldWriteHourly(incomingNumber, storedCurrent) {
   if (!Number.isFinite(incomingNumber)) return false;
   if (!Number.isFinite(storedCurrent)) return true;
@@ -173,6 +192,15 @@ export function summarizeCatalog(bots, capturedAt) {
   };
 }
 
+export function playerIdOf(entry) {
+  if (!entry || typeof entry !== "object") return null;
+  for (const value of [entry.player_id, entry.user_id, entry.id]) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  }
+  return null;
+}
+
 export function normalizeEntry(entry) {
   if (!entry || typeof entry.x_handle !== "string") return null;
   if (!Number.isFinite(entry.rank) || !Number.isFinite(entry.rating)) return null;
@@ -185,6 +213,8 @@ export function normalizeEntry(entry) {
     draws: Number.isFinite(entry.draws) ? entry.draws : 0,
   };
   if (entry.ranked === true || entry.ranked === false) row.ranked = entry.ranked;
+  const rawId = playerIdOf(entry);
+  if (rawId) row.player_id = rawId;
   if (typeof entry.avatar_url === "string") row.avatar_url = entry.avatar_url;
   if (entry.last_season && Number.isFinite(entry.last_season.season)) {
     row.last_season = {

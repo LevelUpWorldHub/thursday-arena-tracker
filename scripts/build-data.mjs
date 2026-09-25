@@ -19,6 +19,7 @@ function slimEntry(entry, detailed) {
     draws: entry.draws,
   };
   if (entry.ranked === true || entry.ranked === false) row.ranked = entry.ranked;
+  if (typeof entry.player_id === "string" && entry.player_id) row.player_id = entry.player_id;
   if (detailed && entry.avatar_url) row.avatar_url = entry.avatar_url;
   if (detailed && entry.last_season) row.last_season = entry.last_season;
   return row;

@@ -17,6 +17,7 @@ export type Row = {
   losses: number;
   draws: number;
   ranked?: boolean;
+  player_id?: string | null;
   avatar_url?: string | null;
   last_season?: LastSeason | null;
 };
@@ -72,6 +73,12 @@ export function forMovement(snap: Snap): boolean {
 
 export function movementSnaps(snaps: Snap[]): Snap[] {
   return snaps.filter(forMovement);
+}
+
+/** Stable id when the API sends one. The live board currently has only x_handle. */
+export function playerKey(row: { player_id?: string | null; x_handle: string }): string {
+  if (typeof row.player_id === "string" && row.player_id.trim()) return `id:${row.player_id.trim()}`;
+  return `handle:${row.x_handle}`;
 }
 
 export function strictTop20(entries: Row[]): Row[] {
@@ -132,10 +139,10 @@ function sameSeason(from: Snap, to: Snap): Result<true> {
 export function ratingDeltas(from: Snap, to: Snap): Result<Delta[]> {
   const gate = sameSeason(from, to);
   if (!gate.ok) return gate;
-  const thenBy = new Map(from.entries.map((row) => [row.x_handle, row]));
+  const thenBy = new Map(from.entries.map((row) => [playerKey(row), row]));
   const deltas: Delta[] = [];
   for (const row of to.entries) {
-    const prev = thenBy.get(row.x_handle);
+    const prev = thenBy.get(playerKey(row));
     if (!prev) continue;
     deltas.push({
       handle: row.x_handle,
@@ -189,6 +196,13 @@ export function seasonAgeHours(startsAt: string | null, nowMs: number, firstSnap
 
 export function justReset(ageHours: number | null): boolean {
   return ageHours != null && ageHours >= 0 && ageHours < 24;
+}
+
+/** An empty live board replaces stored rows only right after reset, or when nothing is stored yet. */
+export function showEmptyLiveBoard(liveCount: number, storedHasRows: boolean, ageHours: number | null): boolean {
+  if (liveCount > 0) return true;
+  if (!storedHasRows) return true;
+  return justReset(ageHours);
 }
 
 export function sinceStartLabel(hours: number): string {
@@ -343,25 +357,25 @@ export function rosterChanges(from: Snap | null, to: Snap | null, firstSnapshot:
   if (from.count !== to.count) return { ok: false, reason: "row-counts-differ" };
   const thenTop = inTop20(from.entries, from.count);
   const nowTop = inTop20(to.entries, to.count);
-  const thenHandles = new Set(thenTop.map((row) => row.x_handle));
-  const nowHandles = new Set(nowTop.map((row) => row.x_handle));
-  const nowBy = new Map(to.entries.map((row) => [row.x_handle, row]));
+  const thenKeys = new Set(thenTop.map((row) => playerKey(row)));
+  const nowKeys = new Set(nowTop.map((row) => playerKey(row)));
+  const nowBy = new Map(to.entries.map((row) => [playerKey(row), row]));
   return {
     ok: true,
     value: {
-      entered: nowTop.filter((row) => !thenHandles.has(row.x_handle)),
+      entered: nowTop.filter((row) => !thenKeys.has(playerKey(row))),
       exited: thenTop
-        .filter((row) => !nowHandles.has(row.x_handle))
+        .filter((row) => !nowKeys.has(playerKey(row)))
         .map((row) => ({
           handle: row.x_handle,
           rankThen: row.rank,
-          rankNow: nowBy.get(row.x_handle)?.rank ?? null,
+          rankNow: nowBy.get(playerKey(row))?.rank ?? null,
         })),
     },
   };
 }
 
-export type Appearance = { handle: string; appearances: number };
+export type Appearance = { key: string; handle: string; appearances: number };
 
 export function utcDay(iso: string): string | null {
   const ms = Date.parse(iso);
@@ -372,21 +386,23 @@ export function utcDay(iso: string): string | null {
 /** One appearance per UTC day in the top 20. Extra snapshots on the same day do not add. */
 export function appearances(snaps: Snap[]): { days: number; rows: Appearance[] } {
   const days = new Set<string>();
-  const byHandle = new Map<string, Set<string>>();
+  const byKey = new Map<string, { handle: string; days: Set<string> }>();
   for (const snap of movementSnaps(snaps)) {
     const day = utcDay(snap.captured_at);
     if (!day) continue;
     days.add(day);
     for (const row of strictTop20(snap.entries)) {
-      const seen = byHandle.get(row.x_handle) ?? new Set<string>();
-      seen.add(day);
-      byHandle.set(row.x_handle, seen);
+      const key = playerKey(row);
+      const bucket = byKey.get(key) ?? { handle: row.x_handle, days: new Set<string>() };
+      bucket.handle = row.x_handle;
+      bucket.days.add(day);
+      byKey.set(key, bucket);
     }
   }
   return {
     days: days.size,
-    rows: [...byHandle.entries()]
-      .map(([handle, seen]) => ({ handle, appearances: seen.size }))
+    rows: [...byKey.entries()]
+      .map(([key, bucket]) => ({ key, handle: bucket.handle, appearances: bucket.days.size }))
       .sort((a, b) => b.appearances - a.appearances || a.handle.localeCompare(b.handle)),
   };
 }
@@ -409,16 +425,20 @@ export function appearancesAcross(groups: { season: number; snaps: Snap[] }[]): 
     .map((group) => ({ season: group.season, table: appearances(group.snaps) }))
     .filter((item) => item.table.days > 0);
   const seasons = prepared.map((item) => ({ number: item.season, days: item.table.days }));
-  const byHandle = new Map<string, Map<number, number>>();
+  const byKey = new Map<string, { handle: string; counts: Map<number, number> }>();
   for (const item of prepared) {
     const table = item.table;
     for (const row of table.rows) {
-      if (!byHandle.has(row.handle)) byHandle.set(row.handle, new Map());
-      byHandle.get(row.handle)?.set(item.season, row.appearances);
+      const existing = byKey.get(row.key) ?? { handle: row.handle, counts: new Map<number, number>() };
+      existing.handle = row.handle;
+      existing.counts.set(item.season, row.appearances);
+      byKey.set(row.key, existing);
     }
   }
-  const rows = [...byHandle.entries()]
-    .map(([handle, counts]) => {
+  const rows = [...byKey.entries()]
+    .map(([, bucket]) => {
+      const handle = bucket.handle;
+      const counts = bucket.counts;
       const bySeason = seasons.map((season) => ({
         season: season.number,
         appearances: counts.get(season.number) || 0,
@@ -488,9 +508,17 @@ export function chartInstant(snap: Snap, endsAt: string | null, nextStartsAt: st
 }
 
 export function seriesFor(snaps: Snap[], handle: string): Point[] {
+  let key = `handle:${handle}`;
+  for (let index = snaps.length - 1; index >= 0; index -= 1) {
+    const match = snaps[index].entries.find((entry) => entry.x_handle === handle);
+    if (match) {
+      key = playerKey(match);
+      break;
+    }
+  }
   const points: Point[] = [];
   for (const snap of snaps) {
-    const row = snap.entries.find((entry) => entry.x_handle === handle);
+    const row = snap.entries.find((entry) => playerKey(entry) === key);
     if (!row) continue;
     const mark = snap.final === true ? "final" : snap.verified === false ? "unverified" : undefined;
     points.push({ t: snap.captured_at, rating: row.rating, rank: row.rank, season: snap.season, ...(mark ? { mark } : {}) });

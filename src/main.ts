@@ -24,6 +24,7 @@ import {
   seasonLabel,
   chartInstant,
   seriesFor,
+  showEmptyLiveBoard,
   sinceStartLabel,
   isStale,
   weekMoverPlan,
@@ -117,6 +118,11 @@ function mapRows(data: unknown): Row[] {
       draws: typeof raw.draws === "number" ? raw.draws : 0,
     };
     if (raw.ranked === true || raw.ranked === false) row.ranked = raw.ranked;
+    const rawId = [raw.player_id, raw.user_id, raw.id].find(
+      (value) => (typeof value === "string" && value.trim()) || (typeof value === "number" && Number.isFinite(value)),
+    );
+    if (typeof rawId === "string" && rawId.trim()) row.player_id = rawId.trim();
+    else if (typeof rawId === "number") row.player_id = String(rawId);
     if (typeof raw.avatar_url === "string") row.avatar_url = raw.avatar_url;
     if (raw.last_season && typeof raw.last_season === "object") {
       const prior = raw.last_season as Record<string, unknown>;
@@ -174,7 +180,9 @@ function person(handle: string, avatar: string | null | undefined, onPick: (hand
     img.referrerPolicy = "no-referrer";
     box.append(img);
   } else {
-    box.append(el("span", "initials", initials(handle)));
+    const initialsNode = el("span", "initials", initials(handle));
+    initialsNode.setAttribute("aria-hidden", "true");
+    box.append(initialsNode);
   }
   const who = el("div", "who");
   const pick = el("button", "linkish", `@${handle}`);
@@ -185,6 +193,7 @@ function person(handle: string, avatar: string | null | undefined, onPick: (hand
   link.href = xProfileUrl(handle);
   link.rel = "noreferrer";
   link.target = "_blank";
+  link.setAttribute("aria-label", `${handle} on X`);
   who.append(pick, link);
   box.append(who);
   return box;
@@ -352,7 +361,12 @@ function render(): void {
   const latest = storedCurrent[storedCurrent.length - 1] ?? null;
   const age = seasonAgeHours(clock?.starts_at ?? null, now, latest?.captured_at ?? null);
   const young = justReset(age);
-  const boardRows = live && live.season === current ? live.entries : latest?.entries ?? [];
+  const storedHasRows = (latest?.entries.length ?? 0) > 0;
+  const useLive =
+    live != null &&
+    live.season === current &&
+    showEmptyLiveBoard(live.entries.length, storedHasRows, age);
+  const boardRows = useLive && live ? live.entries : latest?.entries ?? [];
   const ladder = classifyLadder(boardRows);
   const day = storedCurrent.length
     ? dayMoverPlan(storedCurrent, clock?.starts_at ?? null, now)
