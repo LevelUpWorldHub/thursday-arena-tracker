@@ -1,18 +1,13 @@
 {
-  "generated_at": "2026-09-26T06:49:15.443Z",
-  "last_checked": "2026-09-26T06:49:15.443Z",
+  "generated_at": "2026-09-26T07:11:14.822Z",
+  "last_checked": "2026-09-26T07:11:14.822Z",
   "current": {
-    "number": 4,
-    "state": "active",
-    "starts_at": "2026-09-23T07:00:00Z",
-    "ends_at": "2026-09-26T07:00:00Z"
-  },
-  "next": {
     "number": 5,
-    "state": "scheduled",
+    "state": "active",
     "starts_at": "2026-09-26T07:00:00Z",
     "ends_at": null
   },
+  "next": null,
   "seasons": [
     {
       "number": 2,
@@ -30,11 +25,19 @@
     },
     {
       "number": 4,
-      "state": "active",
+      "state": "ended",
       "starts_at": "2026-09-23T07:00:00Z",
       "ends_at": "2026-09-26T07:00:00Z",
       "first_snapshot": "2026-09-23T18:38:30.000Z",
       "last_snapshot": "2026-09-26T06:49:15.855Z"
+    },
+    {
+      "number": 5,
+      "state": "active",
+      "starts_at": "2026-09-26T07:00:00Z",
+      "ends_at": null,
+      "first_snapshot": "2026-09-26T07:11:15.683Z",
+      "last_snapshot": "2026-09-26T07:11:15.683Z"
     }
   ]
 }
