@@ -19246,6 +19246,522 @@
           "last_season": null
         }
       ]
+    },
+    {
+      "captured_at": "2026-09-26T20:18:17.547Z",
+      "source": "https://thursdayarena.com/api/public/v1/leaderboard?limit=100",
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 5,
+        "state": "active"
+      },
+      "count": 38,
+      "entries": [
+        {
+          "rank": 1,
+          "ranked": true,
+          "x_handle": "ternquest_com",
+          "rating": 1371,
+          "wins": 89,
+          "losses": 10,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1643,
+            "rank": 3
+          },
+          "avatar_url": "https://pbs.twimg.com/profile_images/1870986863978102784/5EiPB4NF_normal.jpg"
+        },
+        {
+          "rank": 2,
+          "ranked": true,
+          "x_handle": "arminsolecki",
+          "rating": 1216,
+          "wins": 49,
+          "losses": 28,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1340,
+            "rank": 10
+          },
+          "avatar_url": "https://pbs.twimg.com/profile_images/2100642702492585984/lpvT81bZ_normal.jpg"
+        },
+        {
+          "rank": 3,
+          "ranked": true,
+          "x_handle": "roostercogdick",
+          "rating": 1132,
+          "wins": 31,
+          "losses": 29,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1361,
+            "rank": 8
+          },
+          "avatar_url": "https://pbs.twimg.com/profile_images/2013469226401452032/fakSr2bv_normal.jpg"
+        },
+        {
+          "rank": 4,
+          "ranked": true,
+          "x_handle": "lucjangrzeugm2",
+          "rating": 1045,
+          "wins": 10,
+          "losses": 10,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1129,
+            "rank": 26
+          }
+        },
+        {
+          "rank": 5,
+          "ranked": true,
+          "x_handle": "poteto",
+          "rating": 1027,
+          "wins": 10,
+          "losses": 9,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1332,
+            "rank": 11
+          }
+        },
+        {
+          "rank": 6,
+          "ranked": true,
+          "x_handle": "qsr_cg",
+          "rating": 1009,
+          "wins": 1,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1357,
+            "rank": 9
+          }
+        },
+        {
+          "rank": 7,
+          "ranked": true,
+          "x_handle": "izzat316",
+          "rating": 1007,
+          "wins": 7,
+          "losses": 11,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1000,
+            "rank": 45
+          }
+        },
+        {
+          "rank": 8,
+          "ranked": true,
+          "x_handle": "stevesecreti",
+          "rating": 1007,
+          "wins": 9,
+          "losses": 13,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1268,
+            "rank": 14
+          }
+        },
+        {
+          "rank": 9,
+          "ranked": true,
+          "x_handle": "amanverma235979",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 1,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1267,
+            "rank": 15
+          }
+        },
+        {
+          "rank": 10,
+          "ranked": true,
+          "x_handle": "chief_aura_",
+          "rating": 997,
+          "wins": 19,
+          "losses": 33,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1307,
+            "rank": 12
+          }
+        },
+        {
+          "rank": 11,
+          "ranked": true,
+          "x_handle": "_solcat_",
+          "rating": 989,
+          "wins": 4,
+          "losses": 5,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1221,
+            "rank": 18
+          }
+        },
+        {
+          "rank": 12,
+          "ranked": true,
+          "x_handle": "sodiumhyrdride",
+          "rating": 985,
+          "wins": 16,
+          "losses": 27,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1261,
+            "rank": 16
+          }
+        },
+        {
+          "rank": 13,
+          "ranked": true,
+          "x_handle": "itsjarrodtran",
+          "rating": 971,
+          "wins": 0,
+          "losses": 3,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 14,
+          "ranked": true,
+          "x_handle": "the_ryyy",
+          "rating": 960,
+          "wins": 11,
+          "losses": 29,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 886,
+            "rank": 72
+          }
+        },
+        {
+          "rank": 15,
+          "ranked": true,
+          "x_handle": "a000001114",
+          "rating": 943,
+          "wins": 5,
+          "losses": 9,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1144,
+            "rank": 25
+          }
+        },
+        {
+          "rank": 16,
+          "ranked": true,
+          "x_handle": "nicousa212",
+          "rating": 922,
+          "wins": 10,
+          "losses": 21,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 17,
+          "ranked": true,
+          "x_handle": "gabriel_x86",
+          "rating": 881,
+          "wins": 22,
+          "losses": 26,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1076,
+            "rank": 33
+          }
+        },
+        {
+          "rank": 18,
+          "ranked": true,
+          "x_handle": "mike_supernova",
+          "rating": 807,
+          "wins": 12,
+          "losses": 41,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 772,
+            "rank": 102
+          }
+        },
+        {
+          "rank": 19,
+          "ranked": false,
+          "x_handle": "alebairos",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1209,
+            "rank": 21
+          }
+        },
+        {
+          "rank": 20,
+          "ranked": false,
+          "x_handle": "blcksilence",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 21,
+          "ranked": false,
+          "x_handle": "brentyoder",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 767,
+            "rank": 103
+          }
+        },
+        {
+          "rank": 22,
+          "ranked": false,
+          "x_handle": "crypto_niubee",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 23,
+          "ranked": false,
+          "x_handle": "default_vpc",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 979,
+            "rank": 51
+          }
+        },
+        {
+          "rank": 24,
+          "ranked": false,
+          "x_handle": "franklau2018",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 3,
+            "rating": 960,
+            "rank": 131
+          }
+        },
+        {
+          "rank": 25,
+          "ranked": false,
+          "x_handle": "grok47sukysuky",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1389,
+            "rank": 7
+          }
+        },
+        {
+          "rank": 26,
+          "ranked": false,
+          "x_handle": "hizkiasiahan05",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 27,
+          "ranked": false,
+          "x_handle": "hslavinsky",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 28,
+          "ranked": false,
+          "x_handle": "jdmonai",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        },
+        {
+          "rank": 29,
+          "ranked": false,
+          "x_handle": "jusrelax",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1469,
+            "rank": 5
+          }
+        },
+        {
+          "rank": 30,
+          "ranked": false,
+          "x_handle": "kanuma368",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 963,
+            "rank": 52
+          }
+        },
+        {
+          "rank": 31,
+          "ranked": false,
+          "x_handle": "kristajoypalmer",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 1,
+            "rating": 940,
+            "rank": 2415
+          }
+        },
+        {
+          "rank": 32,
+          "ranked": false,
+          "x_handle": "tfyoder1",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 900,
+            "rank": 63
+          }
+        },
+        {
+          "rank": 33,
+          "ranked": false,
+          "x_handle": "thatretireddude",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1828,
+            "rank": 1
+          }
+        },
+        {
+          "rank": 34,
+          "ranked": false,
+          "x_handle": "therealrobertsb",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1015,
+            "rank": 42
+          }
+        },
+        {
+          "rank": 35,
+          "ranked": false,
+          "x_handle": "vibeleiz",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 1707,
+            "rank": 2
+          }
+        },
+        {
+          "rank": 36,
+          "ranked": false,
+          "x_handle": "vrushabh_0102",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 930,
+            "rank": 56
+          }
+        },
+        {
+          "rank": 37,
+          "ranked": false,
+          "x_handle": "wolfe_jam",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 915,
+            "rank": 60
+          }
+        },
+        {
+          "rank": 38,
+          "ranked": false,
+          "x_handle": "z4mbon",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        }
+      ]
     }
   ]
 }
