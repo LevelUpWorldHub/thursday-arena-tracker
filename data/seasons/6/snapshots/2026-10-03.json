@@ -484,6 +484,196 @@
           "last_season": null
         }
       ]
+    },
+    {
+      "captured_at": "2026-10-03T07:56:12.497Z",
+      "source": "https://thursdayarena.com/api/public/v1/leaderboard?limit=100",
+      "verified": true,
+      "final": false,
+      "season": {
+        "number": 6,
+        "state": "active"
+      },
+      "count": 11,
+      "entries": [
+        {
+          "rank": 1,
+          "ranked": true,
+          "x_handle": "ioci24",
+          "rating": 1038,
+          "wins": 5,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1455,
+            "rank": 4
+          },
+          "avatar_url": "https://pbs.twimg.com/profile_images/1761030395410157569/2XLJ3f8w_normal.jpg",
+          "look": {
+            "frame": {
+              "id": "top-10",
+              "season": 5,
+              "name": "Season 5 top 10"
+            },
+            "banner": null,
+            "title": null,
+            "updated_at": null
+          }
+        },
+        {
+          "rank": 2,
+          "ranked": true,
+          "x_handle": "jusrelax",
+          "rating": 1020,
+          "wins": 2,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1565,
+            "rank": 2
+          },
+          "avatar_url": "https://pbs.twimg.com/profile_images/1726918917611012096/VCXuF4pY_normal.jpg",
+          "look": {
+            "frame": {
+              "id": "podium-silver",
+              "season": 5,
+              "name": "Season 5 runner-up"
+            },
+            "banner": null,
+            "title": {
+              "id": "ladder-runner-up",
+              "season": 5,
+              "text": "Season 5 runner-up"
+            },
+            "updated_at": null
+          }
+        },
+        {
+          "rank": 3,
+          "ranked": true,
+          "x_handle": "i_ashish_gupta",
+          "rating": 983,
+          "wins": 0,
+          "losses": 1,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 990,
+            "rank": 23
+          },
+          "avatar_url": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+        },
+        {
+          "rank": 4,
+          "ranked": true,
+          "x_handle": "roostercogdick",
+          "rating": 934,
+          "wins": 0,
+          "losses": 5,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1472,
+            "rank": 3
+          }
+        },
+        {
+          "rank": 5,
+          "ranked": false,
+          "x_handle": "alebairos",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1179,
+            "rank": 6
+          }
+        },
+        {
+          "rank": 6,
+          "ranked": false,
+          "x_handle": "kanuma368",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 4,
+            "rating": 963,
+            "rank": 52
+          }
+        },
+        {
+          "rank": 7,
+          "ranked": false,
+          "x_handle": "kryptic_007_",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1181,
+            "rank": 5
+          }
+        },
+        {
+          "rank": 8,
+          "ranked": false,
+          "x_handle": "poteto",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1061,
+            "rank": 15
+          }
+        },
+        {
+          "rank": 9,
+          "ranked": false,
+          "x_handle": "wolfe_jam",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 1149,
+            "rank": 7
+          }
+        },
+        {
+          "rank": 10,
+          "ranked": false,
+          "x_handle": "woodencracker",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": {
+            "season": 5,
+            "rating": 974,
+            "rank": 28
+          }
+        },
+        {
+          "rank": 11,
+          "ranked": false,
+          "x_handle": "xaxxwq31159",
+          "rating": 1000,
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "last_season": null
+        }
+      ]
     }
   ]
 }
